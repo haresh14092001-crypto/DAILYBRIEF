@@ -30,7 +30,7 @@ export default function Agadham() {
 
   const handleLogProblem = () => {
     if (!pTitle || !pDesc) return;
-    addProblem({ id: Date.now(), title: pTitle, desc: pDesc, status: 'New Log' });
+    addProblem({ id: Date.now(), title: pTitle, description: pDesc, status: 'New Log' });
     setPTitle('');
     setPDesc('');
     setIsAddingProblem(false);
@@ -219,7 +219,7 @@ export default function Agadham() {
                      <h3 className={`font-semibold text-[15px] mb-1.5 ${problem.category === 'Corporate/Venture' ? 'text-indigo-900' : 'text-emerald-900'}`}>
                         {problem.title}
                      </h3>
-                     <p className="text-xs text-muted-foreground leading-relaxed italic mb-3">"{problem.desc}"</p>
+                     <p className="text-xs text-muted-foreground leading-relaxed italic mb-3">"{problem.description}"</p>
                      
                      <div className="flex gap-2 items-center">
                         <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold border border-border/40 bg-white w-fit px-2 py-1 rounded-md">

@@ -12,7 +12,7 @@ export function VenturePitch() {
 
   // Filter for Priority 1 Venture problems
   const ventureProblems = problems.filter(p => p.category === 'Corporate/Venture');
-  const mainProblem = ventureProblems[0] || problems[0] || { title: "No problem logged", desc: "Start by logging a clinical gap in the field." };
+  const mainProblem = ventureProblems[0] || problems[0] || { title: "No problem logged", description: "Start by logging a clinical gap in the field." };
   
   // Market Estimates (Mocked for 2026 based on research)
   const marketStats = [
@@ -30,7 +30,7 @@ export function VenturePitch() {
         <div className="space-y-4">
           <div className="p-5 bg-red-50 rounded-2xl border border-red-100">
              <h4 className="font-bold text-red-900 text-lg mb-2">{mainProblem.title}</h4>
-             <p className="text-sm text-red-800/80 leading-relaxed italic">"{mainProblem.desc}"</p>
+             <p className="text-sm text-red-800/80 leading-relaxed italic">"{mainProblem.description}"</p>
           </div>
           <p className="text-xs text-muted-foreground px-1">
             Data sourced from {problems.length} field observations. 
