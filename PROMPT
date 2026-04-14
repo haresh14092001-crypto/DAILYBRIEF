@@ -1,0 +1,347 @@
+You are a team of elite engineers, product designers, and startup operators with 20+ years of experience building scalable SaaS products.
+
+Your task is to build a **Personal Intelligence System (not just a website)** for a final-year veterinary student transitioning into career + startup + PG preparation.
+
+This system must feel like:
+
+* A private operating system
+* A scrolling feed (like Instagram)
+* A structured knowledge + execution engine
+
+---
+
+# 🔧 TECH STACK (STRICT)
+
+Use:
+
+* Next.js (latest stable version)
+* Tailwind CSS
+* shadcn/ui components
+
+Ensure:
+
+* Mobile-first design (primary usage)
+* Fast loading
+* Smooth transitions
+* Clean, minimal UI
+
+---
+
+# 🎨 UI/UX PRINCIPLES (CRITICAL)
+
+* Minimalistic (white/off-white + one accent color: deep green)
+* Card-based layout
+* Infinite scroll feed
+* Bottom navigation bar (thumb-friendly)
+* Instant feedback on actions (add → appears immediately)
+* No clutter, no unnecessary animations
+* Feels like a premium SaaS product
+
+---
+
+# 🧠 CORE IDEA
+
+This is NOT a portfolio.
+
+This is a:
+👉 Personal Intelligence + Career + Startup + Study System
+
+It must support:
+
+* Fast input (capture)
+* Fast retrieval (search/scroll)
+* Continuous updates
+* Modular expansion
+
+---
+
+# 🏗️ MAIN MODULES
+
+---
+
+## 🏠 1. HOME (FEED)
+
+* Infinite scrolling feed
+* Shows:
+
+  * Saved links
+  * Notes
+  * Opportunities
+  * Updates
+
+Each item = card:
+
+* Title
+* Source link
+* Short note
+* Tag/category
+
+Include:
+
+* Highlighted alerts section (important items)
+
+---
+
+## 📚 2. STUDY ZONE (UG + PG)
+
+Subjects (18 total):
+
+1. Veterinary Medicine
+2. Veterinary Surgery & Radiology
+3. Veterinary Gynaecology & Obstetrics
+4. Veterinary Clinical Practices
+5. Veterinary Anatomy
+6. Veterinary Physiology
+7. Veterinary Biochemistry
+8. Veterinary Pharmacology & Toxicology
+9. Veterinary Pathology
+10. Veterinary Microbiology
+11. Veterinary Parasitology
+12. Veterinary Public Health
+13. Livestock Production Management
+14. Livestock Products Technology
+15. Veterinary Extension Education
+16. Veterinary Economics
+17. Animal Genetics & Breeding
+18. Animal Nutrition
+
+Each subject page must allow:
+
+* Upload/view PDFs
+* Add notes
+* Tag important topics
+
+---
+
+### ICAR SECTION
+
+* Previous year questions
+* Most repeated MCQs
+* Topic-wise grouping
+
+---
+
+## 📡 3. OPPORTUNITIES
+
+Track:
+
+* Jobs
+* Internships
+* Fellowships
+* Courses
+
+Each entry:
+
+* Title
+* Link
+* Deadline
+* Status:
+
+  * Not Applied
+  * Applied
+  * Follow-up
+
+---
+
+## 🧪 4. அகதம் (AGADHAM) — STARTUP WAR ROOM
+
+Purpose: Build a veterinary startup using “Think Global, Act Local” approach.
+
+Include:
+
+### Competitor Tracker
+
+* Store startups (e.g., VetPro, Vetic)
+* Track:
+
+  * What they do
+  * Pricing
+  * Business model
+
+---
+
+### Idea Engine
+
+* Capture raw ideas
+* Map:
+  Problem → Solution → Local adaptation
+
+---
+
+### “Think Global, Act Local” Layer (IMPORTANT)
+
+For each idea:
+
+* Global reference
+* Local adaptation (India/Tamil Nadu context)
+* Cost reduction strategy
+* Market entry idea
+
+Example:
+
+* Import concept → simplify → localize → scale
+
+---
+
+### Investor & Incubator List
+
+* Store and track
+* Add links and notes
+
+---
+
+### Cold Email System
+
+* Templates
+* Sent tracking
+* Replies
+
+---
+
+### Market Intelligence
+
+* Trends
+* Hiring patterns
+* Revenue models
+
+---
+
+### Problem Log (CRITICAL)
+
+* Log real-world veterinary problems observed
+
+---
+
+## 🧠 5. INTELLIGENCE CORE
+
+Include:
+
+* Problem Log (global + local)
+* Money Flow Map (how vets/clinics earn)
+* People Tracker (contacts, mentors, founders)
+* Action Log (what user actually did)
+
+---
+
+## 📂 6. RESOURCE HUB
+
+* All saved links
+* Categorized:
+
+  * Veterinary
+  * Research
+  * AI
+  * Business
+  * Study
+
+---
+
+## 📱 7. மாட்டு டாக்டர் (MAATU DOCTOR)
+
+Content creation system.
+
+Include:
+
+* Content ideas list
+* Post tracker:
+
+  * Planned
+  * Posted
+  * Performance
+
+Content types:
+
+* ICAR MCQs
+* Study snippets
+* Case insights
+* Build-in-public (Agadham progress)
+
+---
+
+# ➕ 8. ADD SOURCE SYSTEM (VERY IMPORTANT)
+
+Create a global input box:
+
+User can:
+
+* Paste link
+* Add short note
+* Select category
+
+System should:
+
+* Auto-fetch title (if possible)
+* Add to feed
+* Store in resources
+
+---
+
+# 🔄 9. UPDATE PANEL
+
+Display:
+
+* Newly added sources
+* New opportunities
+* Recent activity
+
+---
+
+# 🔍 10. SEARCH SYSTEM
+
+* Global search across:
+
+  * Notes
+  * Links
+  * Opportunities
+  * Ideas
+
+---
+
+# ⚙️ BEHAVIOR RULES
+
+* Add item < 5 seconds
+* Everything searchable
+* No lag
+* Data persists (use local storage or lightweight backend)
+
+---
+
+# 🧱 ARCHITECTURE
+
+* Modular components
+* Scalable structure
+* Clean folder organization
+
+---
+
+# 🎯 FINAL GOAL
+
+Build a system that:
+
+* Reduces mental overload
+* Increases execution
+* Helps user:
+
+  * Study for PG
+  * Track opportunities
+  * Build a startup
+  * Create content
+
+---
+
+# 🚫 AVOID
+
+* Overdesign
+* Too many colors
+* Complex workflows
+* Slow UI
+
+---
+
+Deliver:
+
+* Fully functional frontend
+* Clean UI
+* Logical structure ready for scaling
+
+Act like a senior product team building a real startup tool.
