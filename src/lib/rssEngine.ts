@@ -107,8 +107,16 @@ export async function aggregateAllSources(sources: FeedSource[]): Promise<FeedIt
     .filter((r): r is PromiseFulfilledResult<FeedItem[]> => r.status === 'fulfilled')
     .flatMap((r) => r.value);
 
+  // Deduplicate by link to prevent duplicate articles from multiple sources
+  const seenLinks = new Set<string>();
+  const deduplicatedItems = allItems.filter((item) => {
+    if (!item.link || seenLinks.has(item.link)) return false;
+    seenLinks.add(item.link);
+    return true;
+  });
+
   // Sort: pinned first, then opportunities, then newest
-  return allItems.sort((a, b) => {
+  return deduplicatedItems.sort((a, b) => {
     if (a.isPinned && !b.isPinned) return -1;
     if (!a.isPinned && b.isPinned) return 1;
     if (a.isOpportunity && !b.isOpportunity) return -1;
