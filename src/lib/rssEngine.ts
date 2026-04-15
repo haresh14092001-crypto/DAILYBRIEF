@@ -31,6 +31,7 @@ export interface FeedItem {
   isPinned: boolean;
   isIgnored: boolean;
   fetchedAt: string;
+  relevanceScore?: number;
 }
 
 // ─── RSS Parser (client-side via DOMParser) ───────────────────────────────────
@@ -54,7 +55,7 @@ export async function fetchRSSFeed(source: FeedSource): Promise<FeedItem[]> {
       ...Array.from(xml.querySelectorAll('entry')),
     ];
 
-    return items.slice(0, 20).map((item, index) => {
+    return items.slice(0, 30).map((item, index) => {
       const title =
         item.querySelector('title')?.textContent?.trim() || 'Untitled';
       const link =
@@ -117,7 +118,7 @@ export async function fetchHTMLFeed(source: FeedSource): Promise<FeedItem[]> {
           !href.includes('javascript:')
         );
       })
-      .slice(0, 10);
+      .slice(0, 15);
 
     return links.map((a, index) => {
       const title = a.textContent?.trim() || 'Untitled';
@@ -174,9 +175,13 @@ const NOISE_PATTERNS = [
   /cookie/i, /privacy policy/i, /subscribe to our newsletter/i,
   /click here/i, /sign up/i, /advertisement/i, /sponsored/i,
   /^\s*$/, /^[0-9]+$/, /^(read more|more|continue|next|prev(ious)?)\s*$/i,
+  /^privacy$/i, /^terms$/i, /^contact$/i, /^about$/i,
+  /login/i, /register/i, /sign in/i,
 ];
 
 export function isNoisy(title: string): boolean {
+  if (title.length < 5) return true; // Too short
+  if (title.length > 150) return true; // Too long
   return NOISE_PATTERNS.some((p) => p.test(title));
 }
 
@@ -186,15 +191,36 @@ export function filterNoisy(items: FeedItem[]): FeedItem[] {
 
 // ─── Opportunity Detector ─────────────────────────────────────────────────────
 const OPPORTUNITY_KEYWORDS = [
-  'job', 'internship', 'fellowship', 'opening', 'hiring', 'vacancy',
-  'apply', 'opportunity', 'position', 'recruitment', 'grant', 'scholarship',
-  'research fellow', 'ph.d', 'phd', 'postdoc', 'residency', 'placement',
+  'job', 'internship', 'fellowship', 'opening', 'hiring', 'vacancy', 'recruitment',
+  'position', 'apply', 'application', 'career', 'employment', 'work', 'role',
+  'grant', 'scholarship', 'funding', 'award', 'prize', 'competition',
+  'ph.d', 'phd', 'postdoc', 'residency', 'placement', 'trainee',
+  'research fellow', 'scientist', 'specialist', 'expert', 'consultant',
+  'opportunity', 'chance', 'available', 'seeking', 'wanted',
+  'deadline', 'apply now', 'join us', 'we are hiring',
+];
+
+const OPPORTUNITY_PHRASES = [
+  'call for', 'open position', 'job opening', 'career opportunity',
+  'research position', 'academic position', 'faculty position',
+  'postdoctoral', 'doctoral', 'graduate program',
 ];
 
 export function detectOpportunity(title: string, category: FeedCategory): boolean {
   if (category === 'Jobs') return true;
   const lower = title.toLowerCase();
-  return OPPORTUNITY_KEYWORDS.some((kw) => lower.includes(kw));
+
+  // Check keywords
+  if (OPPORTUNITY_KEYWORDS.some((kw) => lower.includes(kw))) return true;
+
+  // Check phrases
+  if (OPPORTUNITY_PHRASES.some((phrase) => lower.includes(phrase))) return true;
+
+  // Category-specific boosts
+  if (category === 'Courses' && (lower.includes('enrollment') || lower.includes('admission'))) return true;
+  if (category === 'Research' && (lower.includes('funding') || lower.includes('grant'))) return true;
+
+  return false;
 }
 
 // ─── Focus Mode Filter ─────────────────────────────────────────────────────────

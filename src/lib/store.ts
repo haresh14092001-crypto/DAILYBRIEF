@@ -18,6 +18,7 @@ const LS_FEED = 'vetdesk_feed';
 const LS_SAVED = 'vetdesk_saved';
 const LS_IGNORED = 'vetdesk_ignored';
 const LS_PINNED = 'vetdesk_pinned';
+const LS_PREFERENCES = 'vetdesk_preferences';
 
 function loadJSON<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
@@ -27,6 +28,19 @@ function saveJSON(key: string, value: unknown) {
   if (typeof window === 'undefined') return;
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* noop */ }
 }
+
+// ─── User Preferences ────────────────────────────────────────────────────────
+interface UserPreferences {
+  keywords: string[];
+  preferredCategories: FeedCategory[];
+  enablePersonalization: boolean;
+}
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  keywords: [],
+  preferredCategories: ['Veterinary', 'Research', 'Jobs', 'Startup'],
+  enablePersonalization: true,
+};
 
 // ─── UI State ──────────────────────────────────────────────────────────────────
 interface UIState {
@@ -60,6 +74,7 @@ interface UIState {
   focusMode: FocusMode;
   isFeedLoading: boolean;
   lastRefreshed: string | null;
+  userPreferences: UserPreferences;
 
   addSource: (source: Omit<FeedSource, 'id' | 'addedAt' | 'active'>) => void;
   removeSource: (id: string) => void;
@@ -70,6 +85,7 @@ interface UIState {
   saveFeedItem: (id: string) => void;
   pinFeedItem: (id: string) => void;
   ignoreFeedItem: (id: string) => void;
+  updateUserPreferences: (prefs: Partial<UserPreferences>) => void;
 
   // Derived
   visibleFeedItems: () => FeedItem[];
@@ -176,6 +192,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   focusMode: 'All',
   isFeedLoading: false,
   lastRefreshed: null,
+  userPreferences: loadJSON<UserPreferences>(LS_PREFERENCES, DEFAULT_PREFERENCES),
 
   addSource: (source) => {
     const newSource: FeedSource = {
@@ -211,6 +228,14 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   setCategoryFilter: (cat) => set({ categoryFilter: cat }),
   setFocusMode: (mode) => set({ focusMode: mode }),
+
+  updateUserPreferences: (prefs) => {
+    set((state) => {
+      const updated = { ...state.userPreferences, ...prefs };
+      saveJSON(LS_PREFERENCES, updated);
+      return { userPreferences: updated };
+    });
+  },
 
   refreshFeed: async () => {
     const { sources } = get();
@@ -273,7 +298,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   },
 
   visibleFeedItems: () => {
-    const { feedItems, categoryFilter, focusMode } = get();
+    const { feedItems, categoryFilter, focusMode, userPreferences } = get();
     let items = feedItems.filter((i) => !i.isIgnored);
 
     // Focus mode filter
@@ -284,13 +309,54 @@ export const useUIStore = create<UIState>((set, get) => ({
       items = items.filter((i) => i.category === categoryFilter);
     }
 
-    // Pinned first, then opportunities, then newest
-    return items.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      if (a.isOpportunity && !b.isOpportunity) return -1;
-      if (!a.isOpportunity && b.isOpportunity) return 1;
-      return 0;
-    });
+    // Personalization scoring
+    if (userPreferences.enablePersonalization) {
+      items = items.map((item) => {
+        let score = 0;
+        const titleLower = item.title.toLowerCase();
+        const descLower = (item.description || '').toLowerCase();
+
+        // Keyword matching
+        for (const keyword of userPreferences.keywords) {
+          const kwLower = keyword.toLowerCase();
+          if (titleLower.includes(kwLower) || descLower.includes(kwLower)) {
+            score += 10;
+          }
+        }
+
+        // Preferred categories
+        if (userPreferences.preferredCategories.includes(item.category)) {
+          score += 5;
+        }
+
+        // Opportunities get boost
+        if (item.isOpportunity) {
+          score += 15;
+        }
+
+        // Recent items
+        const ageHours = (Date.now() - new Date(item.fetchedAt).getTime()) / (1000 * 60 * 60);
+        if (ageHours < 24) score += 5;
+
+        return { ...item, relevanceScore: score };
+      }).sort((a, b) => {
+        // Pinned first
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        // Then by relevance score
+        return (b.relevanceScore || 0) - (a.relevanceScore || 0);
+      });
+    } else {
+      // Default sorting
+      items = items.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        if (a.isOpportunity && !b.isOpportunity) return -1;
+        if (!a.isOpportunity && b.isOpportunity) return 1;
+        return 0;
+      });
+    }
+
+    return items;
   },
 }));

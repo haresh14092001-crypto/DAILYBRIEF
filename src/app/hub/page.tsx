@@ -3,10 +3,12 @@
 import {
   Briefcase, FolderArchive, ArrowDownToLine, ArrowUpFromLine,
   Video, Plus, LayoutGrid, Settings, ChevronRight,
+  Target, Hash, ToggleLeft, ToggleRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useUIStore } from '@/lib/store';
+import { FeedCategory } from '@/lib/rssEngine';
 import { cn } from '@/lib/utils';
 
 const RESOURCE_CATS = [
@@ -20,17 +22,38 @@ const RESOURCE_CATS = [
 const POST_TYPES = ['ICAR MCQ', 'Case Insights', 'Study Snippet', 'Agadham'];
 
 export default function Hub() {
-  const { posts, addPost, updatePostStatus, updatePostPerformance } = useUIStore();
+  const { posts, addPost, updatePostStatus, updatePostPerformance, userPreferences, updateUserPreferences, refreshFeed } = useUIStore();
   const [activeTab, setActiveTab] = useState<'tracking' | 'resources' | 'settings'>('tracking');
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostType, setNewPostType] = useState('Study Snippet');
   const [isAddingPost, setIsAddingPost] = useState(false);
+  const [newKeyword, setNewKeyword] = useState('');
+  const [isEditingPrefs, setIsEditingPrefs] = useState(false);
 
   const handleAddPost = () => {
     if (!newPostTitle) return;
     addPost({ id: Date.now(), title: newPostTitle, type: newPostType, status: 'Planned' });
     setNewPostTitle('');
     setIsAddingPost(false);
+  };
+
+  const handleAddKeyword = () => {
+    if (!newKeyword.trim()) return;
+    const updated = [...userPreferences.keywords, newKeyword.trim()];
+    updateUserPreferences({ keywords: updated });
+    setNewKeyword('');
+  };
+
+  const handleRemoveKeyword = (keyword: string) => {
+    const updated = userPreferences.keywords.filter(k => k !== keyword);
+    updateUserPreferences({ keywords: updated });
+  };
+
+  const handleToggleCategory = (category: string) => {
+    const updated = userPreferences.preferredCategories.includes(category)
+      ? userPreferences.preferredCategories.filter(c => c !== category)
+      : [...userPreferences.preferredCategories, category];
+    updateUserPreferences({ preferredCategories: updated });
   };
 
   const TABS = [
@@ -243,6 +266,108 @@ export default function Hub() {
         {/* ─── SETTINGS TAB ──────────────────────────────────── */}
         {activeTab === 'settings' && (
           <div className="space-y-4">
+            {/* Feed Personalization */}
+            <div className="glass-card rounded-[18px] p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-[15px] text-foreground mb-1">Feed Personalization</h3>
+                  <p className="text-[12px] text-muted-foreground/70 leading-relaxed">
+                    Customize your intelligence feed to show more relevant content like Finshots. Changes apply after refreshing the feed.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => refreshFeed()}
+                    className="px-3 py-1.5 rounded-[10px] bg-emerald-600 text-white text-[12px] font-semibold hover:bg-emerald-700 transition-colors"
+                  >
+                    Refresh Feed
+                  </button>
+                  <button
+                    onClick={() => setIsEditingPrefs(!isEditingPrefs)}
+                    className="p-2 rounded-[12px] bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 transition-colors"
+                  >
+                    <Target className="w-4 h-4 text-emerald-700" />
+                  </button>
+                </div>
+              </div>
+
+              {isEditingPrefs && (
+                <div className="space-y-4 pt-2 border-t border-border/20">
+                  {/* Enable Personalization */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[13px] font-semibold text-foreground/80">Smart Personalization</p>
+                      <p className="text-[11px] text-muted-foreground/60">Rank feed items by your interests</p>
+                    </div>
+                    <button
+                      onClick={() => updateUserPreferences({ enablePersonalization: !userPreferences.enablePersonalization })}
+                      className="p-1"
+                    >
+                      {userPreferences.enablePersonalization ? (
+                        <ToggleRight className="w-6 h-6 text-emerald-600" />
+                      ) : (
+                        <ToggleLeft className="w-6 h-6 text-muted-foreground/40" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Keywords */}
+                  <div>
+                    <p className="text-[13px] font-semibold text-foreground/80 mb-2">Interest Keywords</p>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        placeholder="e.g., veterinary, startup, AI"
+                        value={newKeyword}
+                        onChange={(e) => setNewKeyword(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddKeyword()}
+                        className="flex-1 h-8 px-3 rounded-[10px] border border-border/40 bg-white/80 text-[12px] focus-visible:ring-1 focus-visible:ring-emerald-500"
+                      />
+                      <button
+                        onClick={handleAddKeyword}
+                        className="h-8 px-3 rounded-[10px] bg-emerald-600 text-white text-[12px] font-semibold hover:bg-emerald-700 transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {userPreferences.keywords.map((keyword) => (
+                        <button
+                          key={keyword}
+                          onClick={() => handleRemoveKeyword(keyword)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-medium border border-emerald-100 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                        >
+                          <Hash className="w-3 h-3" />
+                          {keyword}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Preferred Categories */}
+                  <div>
+                    <p className="text-[13px] font-semibold text-foreground/80 mb-2">Preferred Categories</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['Veterinary', 'Research', 'Startup', 'Jobs', 'Courses', 'Business', 'General'].map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => handleToggleCategory(cat)}
+                          className={cn(
+                            'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                            userPreferences.preferredCategories.includes(cat)
+                              ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                              : 'bg-white/80 text-muted-foreground/70 border-border/30 hover:border-emerald-200'
+                          )}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="glass-card rounded-[18px] p-5 space-y-4">
               <div>
                 <h3 className="font-bold text-[15px] text-foreground mb-1">Database Backup</h3>

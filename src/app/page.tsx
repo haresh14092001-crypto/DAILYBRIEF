@@ -6,7 +6,7 @@ import { FeedCategory, FocusMode, FeedItem, formatRelativeTime } from '@/lib/rss
 import {
   Bookmark, Pin, EyeOff, ExternalLink, RefreshCw,
   Briefcase, Search, Zap, BookOpen, TrendingUp, GraduationCap,
-  Globe, Sparkles, Filter, BarChart2, Newspaper
+  Globe, Sparkles, Filter, BarChart2, Newspaper, Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -82,9 +82,14 @@ function FeedCard({
                 📌 Pinned
               </span>
             )}
-            {isJob && (
+            {item.isOpportunity && (
               <span className="inline-flex items-center gap-1 text-[9px] font-bold text-orange-700 uppercase tracking-wide bg-orange-50 px-1.5 py-0.5 rounded-md border border-orange-100">
                 <Sparkles className="w-2.5 h-2.5" /> Opportunity
+              </span>
+            )}
+            {item.relevanceScore && item.relevanceScore > 15 && (
+              <span className="inline-flex items-center gap-1 text-[9px] font-bold text-purple-700 uppercase tracking-wide bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-100">
+                <Star className="w-2.5 h-2.5" /> Relevant
               </span>
             )}
             <span className={cn('text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md border', style.badge)}>
