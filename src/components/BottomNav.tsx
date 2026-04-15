@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Rocket, LayoutGrid, Plus, Rss } from 'lucide-react';
+import { Home, BookOpen, Swords, LayoutGrid, Plus, Rss } from 'lucide-react';
 import { useUIStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
@@ -15,13 +15,13 @@ export function BottomNav() {
   const oppCount = feedItems.filter((i) => i.isOpportunity && !i.isSaved && !i.isIgnored).length;
 
   const leftNav = [
-    { name: 'Feed',    href: '/',        icon: Home },
-    { name: 'Sources', href: '/sources', icon: Rss },
+    { name: 'Feed',    href: '/',         icon: Home },
+    { name: 'Sources', href: '/sources',  icon: Rss },
   ];
 
   const rightNav = [
-    { name: 'Study',   href: '/study',   icon: BookOpen },
-    { name: 'Hub',     href: '/hub',     icon: LayoutGrid },
+    { name: 'Study',   href: '/study',    icon: BookOpen },
+    { name: 'Agadham', href: '/agadham',  icon: Swords },
   ];
 
   const renderItem = (item: { name: string; href: string; icon: React.ElementType }) => {

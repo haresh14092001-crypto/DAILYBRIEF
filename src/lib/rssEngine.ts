@@ -36,13 +36,12 @@ export interface FeedItem {
 // ─── RSS Parser (client-side via DOMParser) ───────────────────────────────────
 export async function fetchRSSFeed(source: FeedSource): Promise<FeedItem[]> {
   try {
-    // Use a CORS proxy to avoid cross-origin issues in the browser
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
+    // Use corsproxy.io as it is much more reliable for raw XML/HTML returning text directly
+    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`;
     const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    const json = await res.json();
-    const text: string = json.contents;
+    const text = await res.text();
 
     if (!text) throw new Error('Empty response from proxy');
 
@@ -97,12 +96,11 @@ export async function fetchRSSFeed(source: FeedSource): Promise<FeedItem[]> {
 // ─── Light HTML Scraper ────────────────────────────────────────────────────────
 export async function fetchHTMLFeed(source: FeedSource): Promise<FeedItem[]> {
   try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(source.url)}`;
+    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`;
     const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    const json = await res.json();
-    const text: string = json.contents;
+    const text = await res.text();
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(text, 'text/html');

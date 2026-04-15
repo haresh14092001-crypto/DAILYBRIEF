@@ -1,16 +1,27 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Briefcase, FolderArchive, ArrowDownToLine, ArrowUpFromLine, Video } from 'lucide-react';
+import {
+  Briefcase, FolderArchive, ArrowDownToLine, ArrowUpFromLine,
+  Video, Plus, LayoutGrid, Settings, ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
 import { useUIStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
 
+const RESOURCE_CATS = [
+  { label: 'Veterinary',        emoji: '🐄', sub: 'Merck, IVIS, VIN' },
+  { label: 'Research',          emoji: '🔬', sub: 'PubMed, Frontiers' },
+  { label: 'AI Tools',          emoji: '🤖', sub: 'ChatGPT, Perplexity' },
+  { label: 'Business Strategy', emoji: '📈', sub: 'Harvard, Finshots' },
+  { label: 'Study Templates',   emoji: '📋', sub: 'Notes, MCQs' },
+];
+
+const POST_TYPES = ['ICAR MCQ', 'Case Insights', 'Study Snippet', 'Agadham'];
 
 export default function Hub() {
   const { posts, addPost, updatePostStatus, updatePostPerformance } = useUIStore();
+  const [activeTab, setActiveTab] = useState<'tracking' | 'resources' | 'settings'>('tracking');
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostType, setNewPostType] = useState('Study Snippet');
   const [isAddingPost, setIsAddingPost] = useState(false);
@@ -22,176 +33,254 @@ export default function Hub() {
     setIsAddingPost(false);
   };
 
-  const toggleStatus = (id: number) => {
-    updatePostStatus(id);
-  };
+  const TABS = [
+    { id: 'tracking',   label: 'Tracking',   icon: Briefcase },
+    { id: 'resources',  label: 'Resources',  icon: FolderArchive },
+    { id: 'settings',   label: 'Settings',   icon: Settings },
+  ] as const;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafafa]">
-      <header className="sticky top-0 z-10 bg-[#fafafa]/80 backdrop-blur-md border-b border-border/40 px-4 py-4">
-        <h1 className="text-xl font-semibold tracking-tight">Hub <span className="text-sm font-normal text-muted-foreground ml-2">Resources & Settings</span></h1>
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-20 glass border-b border-border/30">
+        <div className="px-4 pt-4 pb-3 max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h1 className="text-[20px] font-extrabold tracking-tight leading-tight bg-gradient-to-r from-emerald-800 to-emerald-600 bg-clip-text text-transparent">
+                Hub
+              </h1>
+              <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium tracking-wide">
+                Content · Resources · Settings
+              </p>
+            </div>
+            <div className="h-9 w-9 rounded-[12px] flex items-center justify-center bg-emerald-50 border border-emerald-100">
+              <LayoutGrid className="w-4 h-4 text-emerald-700" />
+            </div>
+          </div>
+
+          {/* Tab bar */}
+          <div className="flex gap-1.5">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-1.5 py-[7px] rounded-full text-[11px] font-semibold border transition-all duration-200',
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 text-white border-transparent shadow-sm shadow-emerald-900/20'
+                    : 'bg-white/80 text-muted-foreground/70 border-border/30 hover:border-emerald-200 hover:text-emerald-700',
+                )}
+              >
+                <tab.icon className="w-3 h-3" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </header>
 
-      <div className="flex-1 p-4 pb-24">
-        <Tabs defaultValue="opportunities" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 rounded-full p-1 overflow-x-auto justify-start sm:justify-center shadow-inner">
-            <TabsTrigger value="opportunities" className="rounded-full text-[11px] font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Tracking</TabsTrigger>
-            <TabsTrigger value="resources" className="rounded-full text-[11px] font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Resources</TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-full text-[11px] font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Settings</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="opportunities" className="space-y-4 outline-none">
-             {/* Opportunities Tracker (Kanban) */}
-             <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
-                <div className="min-w-[85%] sm:min-w-[70%] xl:min-w-0 xl:flex-1 shrink-0 snap-center">
-                  <div className="bg-muted/30 rounded-3xl p-4 border border-border/50 h-full">
-                    <div className="flex justify-between items-center mb-4 px-1">
-                      <h3 className="font-bold text-[13px] text-foreground/80 uppercase tracking-widest">Job Tracker</h3>
-                    </div>
-                    <Card className="shadow-sm border-border/40 rounded-2xl">
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold text-[14px]">IVRI Research Fellow</h4>
-                        <p className="text-[10px] text-muted-foreground mt-1 tracking-tight italic">Drafting application...</p>
-                      </CardContent>
-                    </Card>
+      <main className="flex-1 px-4 pb-28 pt-4 max-w-2xl mx-auto w-full space-y-3">
+
+        {/* ─── TRACKING TAB ──────────────────────────────────── */}
+        {activeTab === 'tracking' && (
+          <>
+            {/* Job Tracker */}
+            <div className="glass-card rounded-[18px] p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 rounded-[12px] bg-orange-50 border border-orange-100">
+                  <Briefcase className="w-4 h-4 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[13px] text-foreground/80">Job Tracker</h3>
+                  <p className="text-[10px] text-muted-foreground/50">Opportunities in pipeline</p>
+                </div>
+              </div>
+              <div className="glass-card rounded-[14px] p-3.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-[13px] text-foreground/90">IVRI Research Fellow</h4>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5 italic">Drafting application…</p>
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                    In Progress
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Pipeline — மாட்டு டாக்டர் */}
+            <div className="glass-card rounded-[18px] p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-[12px] bg-pink-50 border border-pink-100">
+                    <Video className="w-4 h-4 text-pink-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[13px] text-foreground/80">மாட்டு டாக்டர்</h3>
+                    <p className="text-[10px] text-muted-foreground/50">Content pipeline</p>
                   </div>
                 </div>
-             </div>
+                <button
+                  onClick={() => setIsAddingPost(true)}
+                  className="flex items-center gap-1 text-[11px] font-semibold px-3 py-1.5 rounded-full bg-pink-50 text-pink-700 border border-pink-100 hover:bg-pink-100 transition-all"
+                >
+                  <Plus className="w-3 h-3" /> New
+                </button>
+              </div>
 
-             {/* Maatu Doctor Section */}
-             <div className="flex justify-between items-center px-1 mt-4 mb-2">
-               <h2 className="font-bold text-sm flex items-center gap-2 tracking-tight">
-                  <Video className="w-4 h-4 text-pink-600" /> மாட்டு டாக்டர் Pipeline
-               </h2>
-               <Button variant="ghost" size="sm" onClick={() => setIsAddingPost(true)} className="h-7 text-[10px] rounded-full px-3 bg-pink-50 text-pink-700 hover:bg-pink-100 italic font-bold">
-                 + Create Post Idea
-               </Button>
-             </div>
+              {/* Add form */}
+              {isAddingPost && (
+                <div className="mb-3 p-4 rounded-[14px] bg-pink-50/40 border border-pink-100/60 space-y-3">
+                  <input
+                    autoFocus
+                    placeholder="Content title…"
+                    className="w-full bg-transparent font-semibold text-[13px] outline-none placeholder:text-muted-foreground/40 border-b border-pink-100 pb-2"
+                    value={newPostTitle}
+                    onChange={e => setNewPostTitle(e.target.value)}
+                  />
+                  <div className="flex flex-wrap gap-1.5">
+                    {POST_TYPES.map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setNewPostType(t)}
+                        className={cn(
+                          'text-[10px] font-semibold px-2.5 py-1 rounded-full border transition-all',
+                          newPostType === t
+                            ? 'bg-pink-600 text-white border-transparent'
+                            : 'bg-white text-muted-foreground/70 border-border/30 hover:border-pink-300'
+                        )}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={handleAddPost} className="flex-1 py-2 rounded-[10px] text-[12px] font-semibold bg-pink-600 text-white hover:bg-pink-700 transition-all">
+                      Save Idea
+                    </button>
+                    <button onClick={() => setIsAddingPost(false)} className="px-4 py-2 rounded-[10px] text-[12px] font-semibold border border-border/30 text-muted-foreground hover:bg-muted/30 transition-all">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
 
-             {isAddingPost && (
-               <Card className="p-4 mb-4 border-pink-100 bg-pink-50/20">
-                 <input 
-                  autoFocus
-                  placeholder="Content Title (e.g. MCQ of the day)" 
-                  className="w-full bg-transparent font-bold outline-none text-sm mb-2"
-                  value={newPostTitle}
-                  onChange={(e) => setNewPostTitle(e.target.value)}
-                 />
-                 <div className="flex gap-2 mb-3">
-                   {['ICAR MCQ', 'Case Insights', 'Study Snippet', 'Agadham'].map(t => (
-                     <Badge 
-                      key={t} 
-                      variant={newPostType === t ? 'default' : 'outline'}
-                      className="cursor-pointer text-[9px] rounded-full"
-                      onClick={() => setNewPostType(t)}
-                     >
-                       {t}
-                     </Badge>
-                   ))}
-                 </div>
-                 <div className="flex gap-2">
-                    <Button size="sm" onClick={handleAddPost} className="bg-pink-600 hover:bg-pink-700 h-8 text-xs">Save Idea</Button>
-                   <Button size="sm" variant="ghost" onClick={() => setIsAddingPost(false)} className="h-8 text-xs">Cancel</Button>
-                 </div>
-               </Card>
-             )}
-             
-             <div className="space-y-3">
-               {posts.map(post => {
-                 const isIngested = post.id >= 200 && post.id < 300; // IDs from our engine
-                 return (
-                   <Card key={post.id} className="shadow-sm border-border/40 rounded-[20px] bg-white group overflow-hidden transition-all hover:border-pink-200">
-                     <CardContent className="p-4 relative">
-                       {isIngested && (
-                         <div className="absolute top-0 right-0 bg-pink-600 text-white text-[7px] font-bold px-2 py-0.5 uppercase tracking-tighter">
-                            AI Ingested
-                         </div>
-                       )}
-                       
-                       <div className="flex justify-between items-center">
-                         <div>
-                           <div className="flex items-center gap-2 mb-1">
-                             <span className="text-[9px] font-bold text-pink-600 uppercase tracking-tighter">{post.type}</span>
-                             <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase ${post.status === 'Posted' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                               {post.status}
-                             </span>
-                           </div>
-                           <h4 className="font-semibold text-[14px] text-foreground/90">{post.title}</h4>
-                         </div>
-                         <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => toggleStatus(post.id)}
-                          className={`rounded-full h-9 w-9 transition-all border border-border/20 ${post.status === 'Posted' ? 'text-green-600 bg-green-50 border-green-100' : 'text-muted-foreground bg-muted/30'}`}
-                         >
-                           {post.status === 'Posted' ? '✓' : '🚀'}
-                         </Button>
-                       </div>
-                       
-                       {post.status === 'Posted' ? (
-                         <div className="mt-3 pt-3 border-t border-border/30 flex items-center justify-between">
-                           <input 
-                            placeholder="Enter stats (e.g. 5k views)" 
-                            className="bg-transparent text-[11px] outline-none placeholder:text-muted-foreground italic w-full"
+              {/* Posts list */}
+              <div className="space-y-2.5">
+                {posts.length === 0 && (
+                  <p className="text-[11px] text-muted-foreground/50 text-center py-4">No content ideas yet. Tap + New to add one.</p>
+                )}
+                {posts.map(post => {
+                  const isIngested = (post.id as number) >= 200 && (post.id as number) < 300;
+                  return (
+                    <div key={post.id} className="glass-card rounded-[14px] p-3.5 relative overflow-hidden">
+                      {isIngested && (
+                        <div className="absolute top-0 right-0 bg-pink-600 text-white text-[7px] font-bold px-2 py-0.5 uppercase tracking-tight rounded-bl-xl">
+                          AI Seeded
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0 mr-2">
+                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            <span className="text-[9px] font-bold text-pink-600 uppercase tracking-tight">{post.type}</span>
+                            <span className={cn('text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase', post.status === 'Posted' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700')}>
+                              {post.status}
+                            </span>
+                          </div>
+                          <h4 className="font-semibold text-[13px] text-foreground/90 leading-snug">{post.title}</h4>
+                          {post.performance && (
+                            <p className="text-[10px] text-emerald-700 mt-0.5 font-medium">{post.performance}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => updatePostStatus(post.id)}
+                          className={cn(
+                            'rounded-full h-8 w-8 flex items-center justify-center border text-sm flex-shrink-0 transition-all',
+                            post.status === 'Posted' ? 'text-green-600 bg-green-50 border-green-100' : 'text-muted-foreground bg-muted/30 border-border/30'
+                          )}
+                        >
+                          {post.status === 'Posted' ? '✓' : '🚀'}
+                        </button>
+                      </div>
+
+                      {post.status === 'Posted' && (
+                        <div className="mt-2.5 pt-2.5 border-t border-border/20">
+                          <input
+                            placeholder="Add performance stats (e.g. 5k views)"
+                            className="bg-transparent text-[11px] outline-none placeholder:text-muted-foreground/40 w-full italic"
                             value={post.performance || ''}
-                            onChange={(e) => updatePostPerformance(post.id, e.target.value)}
-                           />
-                           {post.performance && (
-                             <div className="flex items-center gap-1">
-                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                               <span className="text-[9px] font-bold text-emerald-700 uppercase">Live Index</span>
-                             </div>
-                           )}
-                         </div>
-                       ) : (
-                         <div className="mt-3 flex items-center gap-2">
-                            <div className="h-1 bg-pink-100 flex-1 rounded-full overflow-hidden">
-                               <div className="h-full bg-pink-500 w-[60%]" />
-                            </div>
-                            <span className="text-[8px] font-bold text-pink-600 uppercase whitespace-nowrap">High Growth Potential</span>
-                         </div>
-                       )}
-                     </CardContent>
-                   </Card>
-                 );
-               })}
-             </div>
-          </TabsContent>
+                            onChange={e => updatePostPerformance(post.id, e.target.value)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
 
-          <TabsContent value="resources" className="space-y-4 outline-none">
-             <div className="grid grid-cols-2 gap-3">
-               {['Veterinary', 'Research', 'AI Tools', 'Business Strategy', 'Templates'].map(cat => (
-                 <Card key={cat} className="shadow-[0_2px_10px_rgba(0,0,0,0.02)] border-border/40 hover:shadow-md cursor-pointer rounded-[20px] transition-all hover:border-primary/30 active:scale-[0.98]">
-                   <CardContent className="p-5 flex flex-col items-center justify-center text-center gap-3">
-                     <div className="p-3 bg-primary/5 rounded-full">
-                        <FolderArchive className="w-6 h-6 text-primary" />
-                     </div>
-                     <h4 className="font-semibold text-[12px] text-foreground/80 leading-tight">{cat}</h4>
-                   </CardContent>
-                 </Card>
-               ))}
-             </div>
-          </TabsContent>
+        {/* ─── RESOURCES TAB ─────────────────────────────────── */}
+        {activeTab === 'resources' && (
+          <div className="space-y-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground/50 px-1">Resource Library</p>
+            {RESOURCE_CATS.map(cat => (
+              <button key={cat.label} className="w-full glass-card rounded-[18px] p-4 text-left transition-all hover:-translate-y-[1px] active:scale-[0.99] group">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{cat.emoji}</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-[13px] text-foreground/90">{cat.label}</p>
+                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">{cat.sub}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-emerald-500 transition-colors" />
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
 
-          <TabsContent value="settings" className="space-y-4 outline-none">
-             <div className="bg-white border rounded-[24px] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-4">
-               <div>
-                 <h3 className="font-semibold text-[16px] mb-1 tracking-tight">Database Backup</h3>
-                 <p className="text-[12px] text-muted-foreground leading-relaxed">Your data lives entirely on your device. Export regularly to avoid data loss on browser cache clear.</p>
-               </div>
-               
-               <div className="flex flex-col gap-3 pt-2">
-                 <Button variant="outline" className="w-full justify-start rounded-[14px] h-12 border-border shadow-sm text-[14px] font-medium">
-                   <ArrowDownToLine className="w-4 h-4 mr-3 text-muted-foreground" /> Export Brain (JSON)
-                 </Button>
-                 <Button variant="outline" className="w-full justify-start rounded-[14px] h-12 border-border shadow-sm text-[14px] font-medium text-destructive hover:bg-destructive/5 hover:text-destructive hover:border-destructive/30 border-dashed">
-                   <ArrowUpFromLine className="w-4 h-4 mr-3" /> Import Backup
-                 </Button>
-               </div>
-             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+        {/* ─── SETTINGS TAB ──────────────────────────────────── */}
+        {activeTab === 'settings' && (
+          <div className="space-y-4">
+            <div className="glass-card rounded-[18px] p-5 space-y-4">
+              <div>
+                <h3 className="font-bold text-[15px] text-foreground mb-1">Database Backup</h3>
+                <p className="text-[12px] text-muted-foreground/70 leading-relaxed">
+                  Your data lives locally on your device. Export regularly to avoid data loss on browser cache clear.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-[14px] border border-border/30 bg-white/80 hover:bg-emerald-50/40 hover:border-emerald-200 transition-all group">
+                  <ArrowDownToLine className="w-4 h-4 text-muted-foreground/60 group-hover:text-emerald-700 transition-colors" />
+                  <span className="text-[14px] font-medium text-foreground/80">Export Brain (JSON)</span>
+                </button>
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-[14px] border border-dashed border-border/40 hover:border-red-200 hover:bg-red-50/30 transition-all group">
+                  <ArrowUpFromLine className="w-4 h-4 text-muted-foreground/40 group-hover:text-red-500 transition-colors" />
+                  <span className="text-[14px] font-medium text-muted-foreground/70 group-hover:text-red-600 transition-colors">Import Backup</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="glass-card rounded-[18px] p-5">
+              <h3 className="font-bold text-[15px] text-foreground mb-3">About</h3>
+              <div className="space-y-2">
+                {[
+                  ['App', 'VetDesk Intelligence OS'],
+                  ['Version', '2.0.0'],
+                  ['Built for', 'Final-year Vet Student → Founder'],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground/60 uppercase tracking-[0.08em] font-semibold">{k}</span>
+                    <span className="text-[12px] font-semibold text-foreground/80">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
