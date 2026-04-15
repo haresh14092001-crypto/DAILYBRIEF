@@ -224,40 +224,65 @@ export function applyFocusMode(items: FeedItem[], mode: FocusMode): FeedItem[] {
 const SEED_DATE = '2026-04-15T00:00:00.000Z';
 
 export const DEFAULT_SOURCES: FeedSource[] = [
-  // ── Veterinary ──────────────────────────────────────────────────────────────
-  { id: 'merck-vet',      name: 'Merck Veterinary Manual',      type: 'Website', url: 'https://www.merckvetmanual.com/',               category: 'Veterinary', addedAt: SEED_DATE, active: true },
-  { id: 'vin',            name: 'Veterinary Information Network',type: 'Website', url: 'https://www.vin.com/',                           category: 'Veterinary', addedAt: SEED_DATE, active: true },
-  { id: 'ivis',           name: 'IVIS',                          type: 'Website', url: 'https://www.ivis.org/',                          category: 'Veterinary', addedAt: SEED_DATE, active: true },
-  { id: 'eclinpath',      name: 'eClinpath',                     type: 'Website', url: 'https://eclinpath.com/',                        category: 'Veterinary', addedAt: SEED_DATE, active: true },
-  { id: 'vetstudy-notes', name: 'VetStudy Notes',                type: 'Website', url: 'https://vetstudy.journeywithasr.com/?m=1',      category: 'Veterinary', addedAt: SEED_DATE, active: true },
 
-  // ── Research ────────────────────────────────────────────────────────────────
-  { id: 'pubmed',         name: 'PubMed',                        type: 'Website', url: 'https://pubmed.ncbi.nlm.nih.gov/',             category: 'Research',   addedAt: SEED_DATE, active: true },
-  { id: 'scholar',        name: 'Google Scholar',                type: 'Website', url: 'https://scholar.google.com/',                  category: 'Research',   addedAt: SEED_DATE, active: true },
-  { id: 'cab-direct',     name: 'CAB Direct',                    type: 'Website', url: 'https://www.cabdirect.org/',                   category: 'Research',   addedAt: SEED_DATE, active: true },
-  { id: 'ivri',           name: 'IVRI',                          type: 'Website', url: 'https://ivri.nic.in/',                         category: 'Research',   addedAt: SEED_DATE, active: true },
-  { id: 'woah',           name: 'WOAH',                          type: 'Website', url: 'https://www.woah.org/',                        category: 'Research',   addedAt: SEED_DATE, active: true },
-  { id: 'fao',            name: 'FAO',                           type: 'Website', url: 'https://www.fao.org/',                         category: 'Research',   addedAt: SEED_DATE, active: true },
+  // ━━ 🐄 VETERINARY (9) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'merck-vet',        name: 'Merck Veterinary Manual',         type: 'Website', url: 'https://www.merckvetmanual.com/',                              category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vin',              name: 'Veterinary Information Network',  type: 'Website', url: 'https://www.vin.com/',                                        category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'ivis',             name: 'IVIS',                            type: 'Website', url: 'https://www.ivis.org/',                                       category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'eclinpath',        name: 'eClinpath',                       type: 'Website', url: 'https://eclinpath.com/',                                      category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vetstudy-notes',   name: 'VetStudy Notes',                  type: 'Website', url: 'https://vetstudy.journeywithasr.com/?m=1',                    category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'dvm360',           name: 'DVM360',                          type: 'RSS',     url: 'https://www.dvm360.com/rss.xml',                              category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vet-practice-news',name: 'Veterinary Practice News',        type: 'RSS',     url: 'https://www.veterinarypracticenews.com/feed/',                 category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vet-times',        name: 'Vet Times',                       type: 'RSS',     url: 'https://www.vettimes.co.uk/feed/',                            category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'avma',             name: 'AVMA',                            type: 'RSS',     url: 'https://www.avma.org/rss.xml',                                category: 'Veterinary', addedAt: SEED_DATE, active: true },
 
-  // ── Startups ─────────────────────────────────────────────────────────────────
-  { id: 'yourstory',      name: 'YourStory',                     type: 'RSS',     url: 'https://yourstory.com/feed',                  category: 'Startup',    addedAt: SEED_DATE, active: true },
-  { id: 'inc42',          name: 'Inc42',                         type: 'RSS',     url: 'https://inc42.com/feed/',                     category: 'Startup',    addedAt: SEED_DATE, active: true },
+  // ━━ 🔬 RESEARCH (10) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'pubmed',            name: 'PubMed',                         type: 'Website', url: 'https://pubmed.ncbi.nlm.nih.gov/',                            category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'pubmed-vet-rss',   name: 'PubMed – Vet Search',            type: 'RSS',     url: 'https://pubmed.ncbi.nlm.nih.gov/rss/search/1puhyZxq2kX3ZQ9mKj8/?limit=15', category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'scholar',           name: 'Google Scholar',                 type: 'Website', url: 'https://scholar.google.com/',                                 category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'cab-direct',       name: 'CAB Direct',                      type: 'Website', url: 'https://www.cabdirect.org/',                                  category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'ivri',             name: 'IVRI',                            type: 'Website', url: 'https://ivri.nic.in/',                                       category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'woah',             name: 'WOAH',                            type: 'Website', url: 'https://www.woah.org/',                                      category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'fao',              name: 'FAO',                             type: 'Website', url: 'https://www.fao.org/',                                       category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'bmc-vet-res',      name: 'BMC Veterinary Research',         type: 'RSS',     url: 'https://bmcvetres.biomedcentral.com/articles/rss.xml',        category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'wiley-vet-record', name: 'Wiley – Veterinary Record',       type: 'RSS',     url: 'https://onlinelibrary.wiley.com/feed/20427670/most-recent',   category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'frontiers-vet',    name: 'Frontiers – Veterinary Science',  type: 'RSS',     url: 'https://www.frontiersin.org/journals/veterinary-science/rss', category: 'Research', addedAt: SEED_DATE, active: true },
 
-  // ── Jobs ─────────────────────────────────────────────────────────────────────
-  { id: 'icar-jobs',      name: 'ICAR',                          type: 'Website', url: 'https://icar.org.in/',                        category: 'Jobs',       addedAt: SEED_DATE, active: true },
-  { id: 'vci',            name: 'Veterinary Council of India',   type: 'Website', url: 'https://vci.dahd.nic.in/',                    category: 'Jobs',       addedAt: SEED_DATE, active: true },
-  { id: 'indeed-vet',     name: 'Indeed – Veterinary Jobs',      type: 'Website', url: 'https://in.indeed.com/jobs?q=veterinary',     category: 'Jobs',       addedAt: SEED_DATE, active: true },
-  { id: 'linkedin-jobs',  name: 'LinkedIn Jobs',                 type: 'Website', url: 'https://www.linkedin.com/jobs/',              category: 'Jobs',       addedAt: SEED_DATE, active: true },
+  // ━━ 🌾 AGRICULTURE & ONE HEALTH (6) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'hindu-agri',       name: 'The Hindu – Agriculture',         type: 'RSS',     url: 'https://www.thehindu.com/sci-tech/agriculture/feeder/default.rss', category: 'General', addedAt: SEED_DATE, active: true },
+  { id: 'krishijagran',     name: 'Krishi Jagran',                   type: 'RSS',     url: 'https://krishijagran.com/feed/',                              category: 'General',  addedAt: SEED_DATE, active: true },
+  { id: 'dte-agri',         name: 'Down To Earth – Agriculture',     type: 'RSS',     url: 'https://www.downtoearth.org.in/rss/agriculture',              category: 'General',  addedAt: SEED_DATE, active: true },
+  { id: 'cidrap',           name: 'CIDRAP – One Health',             type: 'RSS',     url: 'https://www.cidrap.umn.edu/rss/all',                          category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'sciencedaily-vet', name: 'ScienceDaily – Animal Disease',   type: 'RSS',     url: 'https://www.sciencedaily.com/rss/health_medicine/animal_disease.xml', category: 'Research', addedAt: SEED_DATE, active: true },
+  { id: 'who-news',         name: 'WHO News',                        type: 'RSS',     url: 'https://www.who.int/feeds/entity/news-english.xml',           category: 'Research', addedAt: SEED_DATE, active: true },
 
-  // ── Courses ──────────────────────────────────────────────────────────────────
-  { id: 'swayam',         name: 'SWAYAM',                        type: 'Website', url: 'https://swayam.gov.in/',                      category: 'Courses',    addedAt: SEED_DATE, active: true },
-  { id: 'coursera',       name: 'Coursera',                      type: 'Website', url: 'https://www.coursera.org/',                   category: 'Courses',    addedAt: SEED_DATE, active: true },
+  // ━━ 🚀 STARTUPS (4) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'yourstory',        name: 'YourStory',                       type: 'RSS',     url: 'https://yourstory.com/feed',                                  category: 'Startup',  addedAt: SEED_DATE, active: true },
+  { id: 'inc42',            name: 'Inc42',                           type: 'RSS',     url: 'https://inc42.com/feed/',                                     category: 'Startup',  addedAt: SEED_DATE, active: true },
+  { id: 'tc-healthtech',    name: 'TechCrunch – HealthTech',         type: 'RSS',     url: 'https://techcrunch.com/tag/healthtech/feed/',                  category: 'Startup',  addedAt: SEED_DATE, active: true },
+  { id: 'mint-companies',   name: 'LiveMint – Companies',            type: 'RSS',     url: 'https://www.livemint.com/rss/companies',                      category: 'Startup',  addedAt: SEED_DATE, active: true },
 
-  // ── Business ─────────────────────────────────────────────────────────────────
-  { id: 'finshots',       name: 'Finshots',                      type: 'RSS',     url: 'https://finshots.in/archive/rss.xml',         category: 'Business',   addedAt: SEED_DATE, active: true },
+  // ━━ 💼 JOBS (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'icar-jobs',         name: 'ICAR',                           type: 'Website', url: 'https://icar.org.in/',                                        category: 'Jobs',     addedAt: SEED_DATE, active: true },
+  { id: 'vci',               name: 'Veterinary Council of India',    type: 'Website', url: 'https://vci.dahd.nic.in/',                                    category: 'Jobs',     addedAt: SEED_DATE, active: true },
+  { id: 'linkedin-jobs',    name: 'LinkedIn Jobs',                   type: 'Website', url: 'https://www.linkedin.com/jobs/',                               category: 'Jobs',     addedAt: SEED_DATE, active: true },
+  { id: 'indeed-vet-rss',   name: 'Indeed – Vet Jobs',               type: 'RSS',     url: 'https://in.indeed.com/rss?q=veterinary',                       category: 'Jobs',     addedAt: SEED_DATE, active: true },
+  { id: 'indeed-anisci',    name: 'Indeed – Animal Science',          type: 'RSS',     url: 'https://in.indeed.com/rss?q=animal+science',                   category: 'Jobs',     addedAt: SEED_DATE, active: true },
+  { id: 'indeed-research',  name: 'Indeed – Research Assistant',      type: 'RSS',     url: 'https://in.indeed.com/rss?q=research+assistant+biology',       category: 'Jobs',     addedAt: SEED_DATE, active: true },
 
-  // ── General ──────────────────────────────────────────────────────────────────
-  { id: 'auroville-now',  name: 'Auroville Now',                 type: 'Website', url: 'https://aurovillenow.in/en',                  category: 'General',    addedAt: SEED_DATE, active: true },
+  // ━━ 🎓 COURSES (4) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'swayam',           name: 'SWAYAM',                          type: 'Website', url: 'https://swayam.gov.in/',                                      category: 'Courses',  addedAt: SEED_DATE, active: true },
+  { id: 'coursera',         name: 'Coursera',                        type: 'Website', url: 'https://www.coursera.org/',                                    category: 'Courses',  addedAt: SEED_DATE, active: true },
+  { id: 'class-central',    name: 'Class Central',                   type: 'RSS',     url: 'https://www.classcentral.com/report/feed/',                     category: 'Courses',  addedAt: SEED_DATE, active: true },
+  { id: 'edx',              name: 'edX',                             type: 'RSS',     url: 'https://www.edx.org/rss',                                      category: 'Courses',  addedAt: SEED_DATE, active: true },
+
+  // ━━ 📈 BUSINESS (3) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'finshots',          name: 'Finshots',                       type: 'RSS',     url: 'https://finshots.in/archive/rss.xml',                           category: 'Business', addedAt: SEED_DATE, active: true },
+  { id: 'moneycontrol-biz', name: 'MoneyControl – Business',         type: 'RSS',     url: 'https://www.moneycontrol.com/rss/business.xml',                 category: 'Business', addedAt: SEED_DATE, active: true },
+  { id: 'mint-market',      name: 'LiveMint – Markets',              type: 'RSS',     url: 'https://www.livemint.com/rss/market',                           category: 'Business', addedAt: SEED_DATE, active: true },
+
+  // ━━ 🌐 GENERAL (1) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  { id: 'auroville-now',    name: 'Auroville Now',                   type: 'Website', url: 'https://aurovillenow.in/en',                                   category: 'General',  addedAt: SEED_DATE, active: true },
 ];
 
 /**
