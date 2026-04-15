@@ -35,33 +35,40 @@ export function BottomNav() {
         key={item.name}
         href={item.href}
         className={cn(
-          'relative flex flex-col items-center justify-center w-full flex-1 gap-1 transition-colors py-2',
-          isActive ? 'text-primary' : 'text-muted-foreground',
+          'relative flex flex-col items-center justify-center w-full flex-1 gap-0.5 py-2',
+          'transition-all duration-200',
+          isActive ? 'text-emerald-700' : 'text-muted-foreground/50 hover:text-muted-foreground/80',
         )}
       >
         <div className="relative">
           <item.icon
-            className={cn('h-[22px] w-[22px]', isActive && 'fill-primary/15')}
-            strokeWidth={isActive ? 2.5 : 2}
+            className={cn(
+              'h-[20px] w-[20px] transition-all duration-200',
+              isActive && 'text-emerald-700',
+            )}
+            strokeWidth={isActive ? 2.5 : 1.8}
           />
           {/* Opportunity badge dot */}
           {showBadge && (
-            <span className="absolute -top-0.5 -right-1 w-2 h-2 bg-orange-500 rounded-full border-[1.5px] border-white animate-pulse" />
+            <span className="absolute -top-0.5 -right-1.5 w-2 h-2 bg-orange-500 rounded-full border-[1.5px] border-white animate-pulse shadow-sm shadow-orange-500/30" />
           )}
         </div>
-        <span className={cn('text-[10px] font-medium', isActive ? 'text-primary' : 'text-muted-foreground')}>
+        <span className={cn(
+          'text-[10px] font-medium tracking-wide transition-all duration-200',
+          isActive ? 'text-emerald-700' : 'text-muted-foreground/50',
+        )}>
           {item.name}
         </span>
-        {/* Active underline */}
+        {/* Active indicator pill */}
         {isActive && (
-          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full" />
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-full" />
         )}
       </Link>
     );
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[68px] bg-white/95 backdrop-blur-md border-t border-border/60 z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+    <div className="fixed bottom-0 left-0 right-0 h-[68px] glass border-t border-white/30 z-40">
       <div className="max-w-md mx-auto h-full flex justify-between items-center relative px-2">
 
         {/* Left nav items */}
@@ -75,14 +82,14 @@ export function BottomNav() {
             onClick={() => toggleQuickCapture(true)}
             aria-label="Quick capture"
             className={cn(
-              'bg-[#065f46] text-white p-3.5 rounded-full',
-              'shadow-[0_8px_20px_rgba(6,95,70,0.35)]',
-              'hover:bg-[#064e3b] hover:scale-105',
-              'active:scale-95 transition-all duration-150',
-              'outline-none border-[4px] border-[#fafafa]',
+              'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-3.5 rounded-[18px]',
+              'shadow-[0_8px_24px_rgba(4,78,58,0.4)]',
+              'hover:shadow-[0_12px_28px_rgba(4,78,58,0.5)] hover:scale-105',
+              'active:scale-95 transition-all duration-300',
+              'outline-none border-[4px] border-white/90',
             )}
           >
-            <Plus className="h-7 w-7" />
+            <Plus className="h-6 w-6" strokeWidth={2.5} />
           </button>
         </div>
 

@@ -58,15 +58,13 @@ function FeedCard({
   return (
     <article
       className={cn(
-        'group relative bg-white rounded-2xl border transition-all duration-200',
-        'shadow-[0_1px_4px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.1)]',
-        'hover:-translate-y-0.5 active:scale-[0.99]',
-        'feed-card-enter',
+        'group relative rounded-[18px] transition-all duration-300 tap-scale',
+        'glass-card hover:-translate-y-[2px] feed-card-enter',
         item.isPinned
-          ? 'border-amber-200 ring-1 ring-amber-100'
+          ? 'border-amber-200 ring-1 ring-amber-100 shadow-amber-900/5'
           : isJob
-          ? 'border-l-[3px] border-l-orange-400 border-t-border/40 border-r-border/40 border-b-border/40'
-          : 'border-border/50',
+          ? 'border-l-[3px] border-l-orange-400'
+          : '',
       )}
       style={{ animationDelay: `${Math.min(index * 40, 300)}ms` }}
     >
@@ -142,7 +140,7 @@ function FeedCard({
             </ActionBtn>
             <a
               href={item.link} target="_blank" rel="noopener noreferrer"
-              className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted/70 transition-colors"
+              className="p-2 rounded-[10px] text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors"
               title="Open in new tab"
             >
               <ExternalLink className="w-3.5 h-3.5" />
@@ -178,8 +176,8 @@ function ActionBtn({
       onClick={onClick}
       title={title}
       className={cn(
-        'p-1.5 rounded-lg transition-all duration-150',
-        active ? activeClass : `text-muted-foreground hover:bg-muted/70 ${className}`,
+        'p-2 rounded-[10px] transition-all duration-200',
+        active ? activeClass : `text-muted-foreground/60 hover:bg-muted/50 hover:text-foreground ${className}`,
       )}
     >
       {children}
@@ -191,19 +189,19 @@ function ActionBtn({
 function SkeletonCard({ delay = 0 }: { delay?: number }) {
   return (
     <div
-      className="bg-white rounded-2xl border border-border/40 p-4 shadow-[0_1px_4px_rgba(0,0,0,0.04)] animate-pulse"
+      className="glass-card rounded-[18px] p-5 animate-pulse"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="flex gap-2 mb-3">
-        <div className="h-4 w-16 bg-muted rounded-full" />
-        <div className="h-4 w-20 bg-muted rounded-full" />
+      <div className="flex gap-2 mb-4">
+        <div className="h-4 w-14 bg-emerald-50 rounded-full" />
+        <div className="h-4 w-18 bg-muted rounded-full" />
       </div>
-      <div className="space-y-2 mb-3">
-        <div className="h-3.5 bg-muted rounded-full w-full" />
-        <div className="h-3.5 bg-muted rounded-full w-4/5" />
-        <div className="h-3.5 bg-muted rounded-full w-3/5" />
+      <div className="space-y-2.5 mb-4">
+        <div className="h-3.5 bg-muted/80 rounded-full w-full" />
+        <div className="h-3.5 bg-muted/60 rounded-full w-4/5" />
+        <div className="h-3.5 bg-muted/40 rounded-full w-3/5" />
       </div>
-      <div className="h-3 bg-muted/60 rounded-full w-2/5" />
+      <div className="h-3 bg-muted/30 rounded-full w-2/5" />
     </div>
   );
 }
@@ -218,11 +216,11 @@ function StatsBar({ items }: { items: FeedItem[] }) {
   if (total === 0) return null;
 
   return (
-    <div className="flex items-center gap-3 px-1 mb-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest overflow-x-auto hide-scrollbar">
-      <span>{total} items</span>
-      {opps > 0 && <span className="text-orange-600">🎯 {opps} opp{opps > 1 ? 's' : ''}</span>}
-      {saved > 0 && <span className="text-emerald-600">🔖 {saved} saved</span>}
-      {pinned > 0 && <span className="text-amber-600">📌 {pinned} pinned</span>}
+    <div className="flex items-center gap-2.5 px-1 mb-4 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-[0.08em] overflow-x-auto hide-scrollbar">
+      <span className="tabular-nums">{total} items</span>
+      {opps > 0 && <span className="text-orange-500/80 tabular-nums">🎯 {opps} opp{opps > 1 ? 's' : ''}</span>}
+      {saved > 0 && <span className="text-emerald-600/80 tabular-nums">🔖 {saved} saved</span>}
+      {pinned > 0 && <span className="text-amber-500/80 tabular-nums">📌 {pinned} pinned</span>}
     </div>
   );
 }
@@ -286,36 +284,36 @@ export default function FeedPage() {
   }, [refreshFeed]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafafa]">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* ── Sticky Header ──────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-20 bg-[#fafafa]/90 backdrop-blur-md border-b border-border/40">
-        <div className="px-4 pt-4 pb-3">
+      <header className="sticky top-0 z-20 glass border-b border-border/30">
+        <div className="px-4 pt-4 pb-3 max-w-2xl mx-auto">
 
           {/* Title row */}
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-[20px] font-bold tracking-tight leading-tight text-foreground">
+              <h1 className="text-[20px] font-extrabold tracking-tight leading-tight bg-gradient-to-r from-emerald-800 to-emerald-600 bg-clip-text text-transparent">
                 Intelligence Feed
               </h1>
               {lastRefreshed && (
-                <p className="text-[10px] text-muted-foreground mt-0.5 font-medium">
+                <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium tracking-wide">
                   Updated {formatRelativeTime(lastRefreshed)}
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <button
                 onClick={() => toggleSearch(true)}
-                className="h-9 w-9 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted/60 transition-colors"
+                className="h-9 w-9 rounded-[12px] flex items-center justify-center text-muted-foreground/60 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-200"
               >
-                <Search className="w-4 h-4" />
+                <Search className="w-[18px] h-[18px]" />
               </button>
               <button
                 onClick={handleRefresh}
                 disabled={isFeedLoading}
-                className="h-9 w-9 rounded-full flex items-center justify-center text-muted-foreground hover:bg-muted/60 transition-colors disabled:opacity-50"
+                className="h-9 w-9 rounded-[12px] flex items-center justify-center text-muted-foreground/60 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-200 disabled:opacity-40"
               >
-                <RefreshCw className={cn('w-4 h-4', isFeedLoading && 'animate-spin')} />
+                <RefreshCw className={cn('w-[18px] h-[18px]', isFeedLoading && 'animate-spin')} />
               </button>
             </div>
           </div>
@@ -327,10 +325,10 @@ export default function FeedPage() {
                 key={m.value}
                 onClick={() => setFocusMode(m.value)}
                 className={cn(
-                  'flex-shrink-0 text-[11px] font-semibold px-3.5 py-1.5 rounded-full border transition-all duration-150',
+                  'flex-shrink-0 text-[11px] font-semibold px-3.5 py-[6px] rounded-full border transition-all duration-200',
                   focusMode === m.value
-                    ? 'bg-[#065f46] text-white border-transparent shadow-md shadow-emerald-900/15'
-                    : 'bg-white text-muted-foreground border-border/50 hover:border-emerald-300 hover:text-emerald-700',
+                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 text-white border-transparent shadow-lg shadow-emerald-900/20'
+                    : 'bg-white/80 text-muted-foreground/80 border-border/30 hover:border-emerald-200 hover:text-emerald-700 hover:bg-emerald-50/50',
                 )}
               >
                 {m.label}
@@ -345,10 +343,10 @@ export default function FeedPage() {
                 key={cat.value}
                 onClick={() => setCategoryFilter(cat.value)}
                 className={cn(
-                  'flex-shrink-0 flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full border transition-all duration-150',
+                  'flex-shrink-0 flex items-center gap-1.5 text-[11px] font-semibold px-3 py-[6px] rounded-full border transition-all duration-200',
                   categoryFilter === cat.value
-                    ? 'bg-[#065f46] text-white border-transparent shadow-sm'
-                    : 'bg-white text-muted-foreground border-border/40 hover:border-emerald-200 hover:text-emerald-700',
+                    ? 'bg-gradient-to-r from-emerald-700 to-emerald-600 text-white border-transparent shadow-sm shadow-emerald-900/15'
+                    : 'bg-white/80 text-muted-foreground/70 border-border/30 hover:border-emerald-200 hover:text-emerald-700 hover:bg-emerald-50/50',
                 )}
               >
                 {cat.icon}
@@ -360,7 +358,7 @@ export default function FeedPage() {
       </header>
 
       {/* ── Feed Body ──────────────────────────────────────────────────────── */}
-      <main className="flex-1 px-4 pb-28 pt-4">
+      <main className="flex-1 px-4 pb-28 pt-4 max-w-2xl mx-auto w-full">
 
         {/* Loading skeletons */}
         {isFeedLoading && (
@@ -373,20 +371,20 @@ export default function FeedPage() {
 
         {/* Empty — no sources fetched yet */}
         {!isFeedLoading && !hasItems && (
-          <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-            <div className="relative w-20 h-20 mb-5">
-              <div className="absolute inset-0 bg-emerald-50 rounded-full animate-ping opacity-20" />
-              <div className="relative w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center py-24 text-center px-6">
+            <div className="relative w-20 h-20 mb-6">
+              <div className="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-20" />
+              <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full flex items-center justify-center shadow-lg shadow-emerald-900/10">
                 <Globe className="w-9 h-9 text-emerald-600" />
               </div>
             </div>
-            <h2 className="font-bold text-[17px] mb-2 text-foreground">Feed is empty</h2>
-            <p className="text-sm text-muted-foreground mb-6 max-w-[260px] leading-relaxed">
+            <h2 className="font-extrabold text-lg mb-2 text-foreground">Feed is empty</h2>
+            <p className="text-sm text-muted-foreground/70 mb-7 max-w-[260px] leading-relaxed">
               Add RSS sources on the Sources tab, then tap refresh to load your intelligence feed.
             </p>
             <Button
               onClick={handleRefresh}
-              className="rounded-full px-7 h-11 bg-[#065f46] hover:bg-[#064e3b] shadow-md shadow-emerald-900/20 font-semibold"
+              className="rounded-full px-7 h-11 bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 shadow-lg shadow-emerald-900/25 font-semibold transition-all duration-300"
             >
               <RefreshCw className="w-4 h-4 mr-2" /> Fetch Now
             </Button>
@@ -395,15 +393,15 @@ export default function FeedPage() {
 
         {/* No results after filter */}
         {!isFeedLoading && hasItems && allVisible.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-            <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mb-4">
-              <Filter className="w-6 h-6 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+            <div className="w-14 h-14 bg-muted/60 rounded-[16px] flex items-center justify-center mb-4">
+              <Filter className="w-6 h-6 text-muted-foreground/60" />
             </div>
-            <p className="font-semibold text-sm mb-1">No items match this filter</p>
-            <p className="text-xs text-muted-foreground mb-4">Try switching to a different focus mode or category</p>
+            <p className="font-semibold text-sm mb-1 text-foreground">No items match this filter</p>
+            <p className="text-xs text-muted-foreground/70 mb-5">Try switching to a different focus mode or category</p>
             <button
               onClick={() => { setCategoryFilter('All'); setFocusMode('All'); }}
-              className="text-xs text-emerald-700 font-semibold underline underline-offset-2"
+              className="text-xs text-emerald-700 font-semibold hover:text-emerald-800 underline underline-offset-4 decoration-emerald-300 transition-colors"
             >
               Clear all filters
             </button>
@@ -431,18 +429,18 @@ export default function FeedPage() {
 
             {/* Loading more indicator */}
             {hasMore && (
-              <div className="flex justify-center py-4">
-                <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium">
-                  <div className="w-3 h-3 border-2 border-muted border-t-emerald-600 rounded-full animate-spin" />
-                  Loading more...
+              <div className="flex justify-center py-5">
+                <div className="flex items-center gap-2 text-[11px] text-muted-foreground/60 font-medium">
+                  <div className="w-3.5 h-3.5 border-2 border-muted border-t-emerald-500 rounded-full animate-spin" />
+                  Loading more…
                 </div>
               </div>
             )}
 
             {/* End of feed */}
             {!hasMore && allVisible.length > PAGE_SIZE && (
-              <div className="text-center py-6">
-                <div className="inline-flex items-center gap-2 text-[11px] text-muted-foreground font-medium bg-white border border-border/40 rounded-full px-4 py-2 shadow-sm">
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-2 text-[11px] text-muted-foreground/60 font-medium glass-card rounded-full px-5 py-2.5">
                   <Sparkles className="w-3 h-3 text-emerald-500" />
                   You&apos;re all caught up · {allVisible.length} items
                 </div>
