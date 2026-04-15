@@ -36,9 +36,9 @@ export interface FeedItem {
 // ─── RSS Parser (client-side via DOMParser) ───────────────────────────────────
 export async function fetchRSSFeed(source: FeedSource): Promise<FeedItem[]> {
   try {
-    // Use corsproxy.io as it is much more reliable for raw XML/HTML returning text directly
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`;
-    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+    // Use local API proxy to bypass CORS reliably from our own server
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(source.url)}`;
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const text = await res.text();
@@ -96,8 +96,8 @@ export async function fetchRSSFeed(source: FeedSource): Promise<FeedItem[]> {
 // ─── Light HTML Scraper ────────────────────────────────────────────────────────
 export async function fetchHTMLFeed(source: FeedSource): Promise<FeedItem[]> {
   try {
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(source.url)}`;
-    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(source.url)}`;
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const text = await res.text();
