@@ -49,9 +49,11 @@ export default function Hub() {
     updateUserPreferences({ keywords: updated });
   };
 
-  const handleToggleCategory = (category: string) => {
+  const PREFERRED_CATEGORIES: FeedCategory[] = ['Veterinary', 'Research', 'Startup', 'Jobs', 'Courses', 'Business', 'General'];
+
+  const handleToggleCategory = (category: FeedCategory) => {
     const updated = userPreferences.preferredCategories.includes(category)
-      ? userPreferences.preferredCategories.filter(c => c !== category)
+      ? userPreferences.preferredCategories.filter((c) => c !== category)
       : [...userPreferences.preferredCategories, category];
     updateUserPreferences({ preferredCategories: updated });
   };
@@ -348,7 +350,7 @@ export default function Hub() {
                   <div>
                     <p className="text-[13px] font-semibold text-foreground/80 mb-2">Preferred Categories</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {['Veterinary', 'Research', 'Startup', 'Jobs', 'Courses', 'Business', 'General'].map((cat) => (
+                      {PREFERRED_CATEGORIES.map((cat) => (
                         <button
                           key={cat}
                           onClick={() => handleToggleCategory(cat)}

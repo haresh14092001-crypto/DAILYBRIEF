@@ -202,6 +202,15 @@ export const useUIStore = create<UIState>((set, get) => ({
       active: true,
     };
     set((state) => {
+      const existing = state.sources.find((s) => s.url === newSource.url);
+      if (existing) {
+        const updated = state.sources.map((s) =>
+          s.url === newSource.url ? { ...s, active: true, name: newSource.name, category: newSource.category } : s
+        );
+        saveJSON(LS_SOURCES, updated);
+        return { sources: updated };
+      }
+
       const updated = [newSource, ...state.sources];
       saveJSON(LS_SOURCES, updated);
       return { sources: updated };

@@ -298,10 +298,13 @@ export default function FeedPage() {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h1 className="text-[20px] font-extrabold tracking-tight leading-tight bg-gradient-to-r from-emerald-800 to-emerald-600 bg-clip-text text-transparent">
-                Intelligence Feed
+                Haresh's Dailybrief ⚡
               </h1>
+              <p className="text-[11px] text-muted-foreground/70 mt-1 font-medium tracking-wide">
+                Vet · Startups · Markets.
+              </p>
               {lastRefreshed && (
-                <p className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium tracking-wide">
+                <p className="text-[10px] text-muted-foreground/60 mt-1 font-medium tracking-wide">
                   Updated {formatRelativeTime(lastRefreshed)}
                 </p>
               )}
