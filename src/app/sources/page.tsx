@@ -9,17 +9,18 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
   Plus, Trash2, ToggleLeft, ToggleRight,
-  Rss, Globe, Briefcase, BookOpen, Zap, TrendingUp, GraduationCap
+  Rss, Globe, Briefcase, BookOpen, Zap, TrendingUp, GraduationCap, BarChart2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES: { label: string; value: FeedCategory }[] = [
   { label: 'Veterinary', value: 'Veterinary' },
-  { label: 'Research', value: 'Research' },
-  { label: 'Startup', value: 'Startup' },
-  { label: 'Jobs', value: 'Jobs' },
-  { label: 'Courses', value: 'Courses' },
-  { label: 'General', value: 'General' },
+  { label: 'Research',   value: 'Research' },
+  { label: 'Startup',    value: 'Startup' },
+  { label: 'Jobs',       value: 'Jobs' },
+  { label: 'Courses',    value: 'Courses' },
+  { label: 'Business',   value: 'Business' },
+  { label: 'General',    value: 'General' },
 ];
 
 const SOURCE_TYPES: { label: string; value: SourceType }[] = [
@@ -33,6 +34,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Startup:    'bg-purple-50 text-purple-700',
   Jobs:       'bg-orange-50 text-orange-700',
   Courses:    'bg-cyan-50 text-cyan-700',
+  Business:   'bg-rose-50 text-rose-700',
   General:    'bg-gray-50 text-gray-600',
 };
 
@@ -42,6 +44,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   Startup:    <TrendingUp className="w-3.5 h-3.5" />,
   Jobs:       <Briefcase className="w-3.5 h-3.5" />,
   Courses:    <GraduationCap className="w-3.5 h-3.5" />,
+  Business:   <BarChart2 className="w-3.5 h-3.5" />,
   General:    <Globe className="w-3.5 h-3.5" />,
 };
 

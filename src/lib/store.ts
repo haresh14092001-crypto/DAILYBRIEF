@@ -9,6 +9,7 @@ import {
   aggregateAllSources,
   filterNoisy,
   applyFocusMode,
+  mergeWithDefaults,
 } from './rssEngine';
 
 // ─── localStorage helpers ──────────────────────────────────────────────────────
@@ -167,7 +168,9 @@ export const useUIStore = create<UIState>((set, get) => ({
   },
 
   // ── RSS Feed State ─────────────────────────────────────────────────────────
-  sources: loadJSON<FeedSource[]>(LS_SOURCES, DEFAULT_SOURCES),
+  // mergeWithDefaults adds any new default sources added since the user's last visit
+  // without overwriting their existing or custom-added sources
+  sources: mergeWithDefaults(loadJSON<FeedSource[]>(LS_SOURCES, DEFAULT_SOURCES)),
   feedItems: loadJSON<FeedItem[]>(LS_FEED, []),
   categoryFilter: 'All',
   focusMode: 'All',

@@ -6,7 +6,7 @@ import { FeedCategory, FocusMode, FeedItem, formatRelativeTime } from '@/lib/rss
 import {
   Bookmark, Pin, EyeOff, ExternalLink, RefreshCw,
   Briefcase, Search, Zap, BookOpen, TrendingUp, GraduationCap,
-  Globe, Sparkles, Filter
+  Globe, Sparkles, Filter, BarChart2, Newspaper
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,8 @@ const CATEGORIES: { label: string; value: FeedCategory | 'All'; icon: React.Reac
   { label: 'Startup',  value: 'Startup',    icon: <TrendingUp className="w-3 h-3" /> },
   { label: 'Jobs',     value: 'Jobs',       icon: <Briefcase className="w-3 h-3" /> },
   { label: 'Courses',  value: 'Courses',    icon: <GraduationCap className="w-3 h-3" /> },
+  { label: 'Business', value: 'Business',   icon: <BarChart2 className="w-3 h-3" /> },
+  { label: 'General',  value: 'General',    icon: <Newspaper className="w-3 h-3" /> },
 ];
 
 const FOCUS_MODES: { label: string; value: FocusMode }[] = [
@@ -36,6 +38,7 @@ const CAT_STYLE: Record<string, { badge: string; dot: string }> = {
   Startup:    { badge: 'bg-violet-50 text-violet-700 border-violet-100',    dot: 'bg-violet-500' },
   Jobs:       { badge: 'bg-orange-50 text-orange-700 border-orange-100',    dot: 'bg-orange-500' },
   Courses:    { badge: 'bg-cyan-50 text-cyan-700 border-cyan-100',          dot: 'bg-cyan-500' },
+  Business:   { badge: 'bg-rose-50 text-rose-700 border-rose-100',          dot: 'bg-rose-500' },
   General:    { badge: 'bg-gray-50 text-gray-500 border-gray-100',          dot: 'bg-gray-400' },
 };
 

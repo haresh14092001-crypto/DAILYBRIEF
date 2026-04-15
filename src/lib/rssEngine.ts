@@ -3,7 +3,7 @@
  * Phases 2–3: RSS fetching + light scraping for VetDesk Intelligence Feed
  */
 
-export type FeedCategory = 'Veterinary' | 'Research' | 'Startup' | 'Jobs' | 'Courses' | 'General';
+export type FeedCategory = 'Veterinary' | 'Research' | 'Startup' | 'Jobs' | 'Courses' | 'Business' | 'General';
 export type SourceType = 'RSS' | 'Website';
 export type FocusMode = 'All' | 'Study' | 'Career' | 'Startup';
 
@@ -203,56 +203,73 @@ export function detectOpportunity(title: string, category: FeedCategory): boolea
 export function applyFocusMode(items: FeedItem[], mode: FocusMode): FeedItem[] {
   switch (mode) {
     case 'Study':
-      return items.filter((i) => i.category === 'Veterinary' || i.category === 'Research' || i.category === 'Courses');
+      return items.filter((i) =>
+        i.category === 'Veterinary' || i.category === 'Research' || i.category === 'Courses'
+      );
     case 'Career':
-      return items.filter((i) => i.category === 'Jobs' || i.category === 'Courses');
+      return items.filter((i) =>
+        i.category === 'Jobs' || i.category === 'Courses' || i.category === 'Business'
+      );
     case 'Startup':
-      return items.filter((i) => i.category === 'Startup');
+      return items.filter((i) =>
+        i.category === 'Startup' || i.category === 'Business'
+      );
     case 'All':
     default:
       return items;
   }
 }
 
-// ─── Default Sources (pre-loaded for instant value) ───────────────────────────
+// ─── Default Sources (pre-loaded curated knowledge base) ─────────────────────
+const SEED_DATE = '2026-04-15T00:00:00.000Z';
+
 export const DEFAULT_SOURCES: FeedSource[] = [
-  {
-    id: 'pubmed-vet',
-    name: 'PubMed – Veterinary',
-    type: 'RSS',
-    url: 'https://pubmed.ncbi.nlm.nih.gov/rss/search/1Rym5ANFNj27f3z2U-rJbGUwxzJgMBPsliPaKZivVPnVirHIPy/?limit=20&utm_campaign=pubmed-2&fc=20241201171200',
-    category: 'Veterinary',
-    addedAt: new Date().toISOString(),
-    active: true,
-  },
-  {
-    id: 'nature-research',
-    name: 'Nature – Latest Research',
-    type: 'RSS',
-    url: 'https://www.nature.com/nature.rss',
-    category: 'Research',
-    addedAt: new Date().toISOString(),
-    active: true,
-  },
-  {
-    id: 'techcrunch-startup',
-    name: 'TechCrunch – Startups',
-    type: 'RSS',
-    url: 'https://techcrunch.com/category/startups/feed/',
-    category: 'Startup',
-    addedAt: new Date().toISOString(),
-    active: true,
-  },
-  {
-    id: 'icar-jobs',
-    name: 'ICAR – Opportunities',
-    type: 'RSS',
-    url: 'https://icar.org.in/rss.xml',
-    category: 'Jobs',
-    addedAt: new Date().toISOString(),
-    active: true,
-  },
+  // ── Veterinary ──────────────────────────────────────────────────────────────
+  { id: 'merck-vet',      name: 'Merck Veterinary Manual',      type: 'Website', url: 'https://www.merckvetmanual.com/',               category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vin',            name: 'Veterinary Information Network',type: 'Website', url: 'https://www.vin.com/',                           category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'ivis',           name: 'IVIS',                          type: 'Website', url: 'https://www.ivis.org/',                          category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'eclinpath',      name: 'eClinpath',                     type: 'Website', url: 'https://eclinpath.com/',                        category: 'Veterinary', addedAt: SEED_DATE, active: true },
+  { id: 'vetstudy-notes', name: 'VetStudy Notes',                type: 'Website', url: 'https://vetstudy.journeywithasr.com/?m=1',      category: 'Veterinary', addedAt: SEED_DATE, active: true },
+
+  // ── Research ────────────────────────────────────────────────────────────────
+  { id: 'pubmed',         name: 'PubMed',                        type: 'Website', url: 'https://pubmed.ncbi.nlm.nih.gov/',             category: 'Research',   addedAt: SEED_DATE, active: true },
+  { id: 'scholar',        name: 'Google Scholar',                type: 'Website', url: 'https://scholar.google.com/',                  category: 'Research',   addedAt: SEED_DATE, active: true },
+  { id: 'cab-direct',     name: 'CAB Direct',                    type: 'Website', url: 'https://www.cabdirect.org/',                   category: 'Research',   addedAt: SEED_DATE, active: true },
+  { id: 'ivri',           name: 'IVRI',                          type: 'Website', url: 'https://ivri.nic.in/',                         category: 'Research',   addedAt: SEED_DATE, active: true },
+  { id: 'woah',           name: 'WOAH',                          type: 'Website', url: 'https://www.woah.org/',                        category: 'Research',   addedAt: SEED_DATE, active: true },
+  { id: 'fao',            name: 'FAO',                           type: 'Website', url: 'https://www.fao.org/',                         category: 'Research',   addedAt: SEED_DATE, active: true },
+
+  // ── Startups ─────────────────────────────────────────────────────────────────
+  { id: 'yourstory',      name: 'YourStory',                     type: 'RSS',     url: 'https://yourstory.com/feed',                  category: 'Startup',    addedAt: SEED_DATE, active: true },
+  { id: 'inc42',          name: 'Inc42',                         type: 'RSS',     url: 'https://inc42.com/feed/',                     category: 'Startup',    addedAt: SEED_DATE, active: true },
+
+  // ── Jobs ─────────────────────────────────────────────────────────────────────
+  { id: 'icar-jobs',      name: 'ICAR',                          type: 'Website', url: 'https://icar.org.in/',                        category: 'Jobs',       addedAt: SEED_DATE, active: true },
+  { id: 'vci',            name: 'Veterinary Council of India',   type: 'Website', url: 'https://vci.dahd.nic.in/',                    category: 'Jobs',       addedAt: SEED_DATE, active: true },
+  { id: 'indeed-vet',     name: 'Indeed – Veterinary Jobs',      type: 'Website', url: 'https://in.indeed.com/jobs?q=veterinary',     category: 'Jobs',       addedAt: SEED_DATE, active: true },
+  { id: 'linkedin-jobs',  name: 'LinkedIn Jobs',                 type: 'Website', url: 'https://www.linkedin.com/jobs/',              category: 'Jobs',       addedAt: SEED_DATE, active: true },
+
+  // ── Courses ──────────────────────────────────────────────────────────────────
+  { id: 'swayam',         name: 'SWAYAM',                        type: 'Website', url: 'https://swayam.gov.in/',                      category: 'Courses',    addedAt: SEED_DATE, active: true },
+  { id: 'coursera',       name: 'Coursera',                      type: 'Website', url: 'https://www.coursera.org/',                   category: 'Courses',    addedAt: SEED_DATE, active: true },
+
+  // ── Business ─────────────────────────────────────────────────────────────────
+  { id: 'finshots',       name: 'Finshots',                      type: 'RSS',     url: 'https://finshots.in/archive/rss.xml',         category: 'Business',   addedAt: SEED_DATE, active: true },
+
+  // ── General ──────────────────────────────────────────────────────────────────
+  { id: 'auroville-now',  name: 'Auroville Now',                 type: 'Website', url: 'https://aurovillenow.in/en',                  category: 'General',    addedAt: SEED_DATE, active: true },
 ];
+
+/**
+ * Merge saved localStorage sources with DEFAULT_SOURCES.
+ * Adds any default source (by id) that doesn't already exist in saved list.
+ * Never overwrites sources the user has added or modified.
+ */
+export function mergeWithDefaults(saved: FeedSource[]): FeedSource[] {
+  const savedIds = new Set(saved.map((s) => s.id));
+  const newDefaults = DEFAULT_SOURCES.filter((d) => !savedIds.has(d.id));
+  return newDefaults.length > 0 ? [...saved, ...newDefaults] : saved;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function stripHtml(html: string): string {
