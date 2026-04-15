@@ -1,6 +1,33 @@
 import { create } from 'zustand';
 import { supabase } from './supabase';
+import {
+  FeedSource,
+  FeedItem,
+  FocusMode,
+  FeedCategory,
+  DEFAULT_SOURCES,
+  aggregateAllSources,
+  filterNoisy,
+  applyFocusMode,
+} from './rssEngine';
 
+// ─── localStorage helpers ──────────────────────────────────────────────────────
+const LS_SOURCES = 'vetdesk_sources';
+const LS_FEED = 'vetdesk_feed';
+const LS_SAVED = 'vetdesk_saved';
+const LS_IGNORED = 'vetdesk_ignored';
+const LS_PINNED = 'vetdesk_pinned';
+
+function loadJSON<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try { return JSON.parse(localStorage.getItem(key) || '') as T; } catch { return fallback; }
+}
+function saveJSON(key: string, value: unknown) {
+  if (typeof window === 'undefined') return;
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* noop */ }
+}
+
+// ─── UI State ──────────────────────────────────────────────────────────────────
 interface UIState {
   isQuickCaptureOpen: boolean;
   isSearchOpen: boolean;
@@ -8,15 +35,14 @@ interface UIState {
   toggleQuickCapture: (open?: boolean) => void;
   toggleSearch: (open?: boolean) => void;
   setActiveSubject: (subject: string | null) => void;
-  
-  // Intelligence Data
+
+  // ── Personal capture (Supabase) ────────────────────────────────────────────
   activities: any[];
   problems: any[];
   ideas: any[];
   posts: any[];
   notes: any[];
-  
-  // Cloud Actions
+
   fetchCloudData: () => Promise<void>;
   addActivity: (item: any) => Promise<void>;
   addProblem: (item: any) => Promise<void>;
@@ -25,9 +51,31 @@ interface UIState {
   updatePostStatus: (id: number | string) => Promise<void>;
   updatePostPerformance: (id: number | string, performance: string) => Promise<void>;
   addNote: (item: any) => Promise<void>;
+
+  // ── RSS Intelligence Feed ──────────────────────────────────────────────────
+  sources: FeedSource[];
+  feedItems: FeedItem[];
+  categoryFilter: FeedCategory | 'All';
+  focusMode: FocusMode;
+  isFeedLoading: boolean;
+  lastRefreshed: string | null;
+
+  addSource: (source: Omit<FeedSource, 'id' | 'addedAt' | 'active'>) => void;
+  removeSource: (id: string) => void;
+  toggleSourceActive: (id: string) => void;
+  setCategoryFilter: (cat: FeedCategory | 'All') => void;
+  setFocusMode: (mode: FocusMode) => void;
+  refreshFeed: () => Promise<void>;
+  saveFeedItem: (id: string) => void;
+  pinFeedItem: (id: string) => void;
+  ignoreFeedItem: (id: string) => void;
+
+  // Derived
+  visibleFeedItems: () => FeedItem[];
 }
 
 export const useUIStore = create<UIState>((set, get) => ({
+  // ── UI ─────────────────────────────────────────────────────────────────────
   isQuickCaptureOpen: false,
   isSearchOpen: false,
   activeSubject: null,
@@ -37,15 +85,19 @@ export const useUIStore = create<UIState>((set, get) => ({
   posts: [],
   notes: [],
 
-  toggleQuickCapture: (open) => set((state) => ({ isQuickCaptureOpen: open !== undefined ? open : !state.isQuickCaptureOpen })),
-  toggleSearch: (open) => set((state) => ({ isSearchOpen: open !== undefined ? open : !state.isSearchOpen })),
+  toggleQuickCapture: (open) =>
+    set((state) => ({ isQuickCaptureOpen: open !== undefined ? open : !state.isQuickCaptureOpen })),
+  toggleSearch: (open) =>
+    set((state) => ({ isSearchOpen: open !== undefined ? open : !state.isSearchOpen })),
   setActiveSubject: (subject) => set({ activeSubject: subject }),
 
+  // ── Cloud (Supabase) ───────────────────────────────────────────────────────
   fetchCloudData: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Parallel fetch for speed
     const [act, prob, pst, nts] = await Promise.all([
       supabase.from('activities').select('*').order('created_at', { ascending: false }),
       supabase.from('startup_problems').select('*').order('created_at', { ascending: false }),
@@ -57,51 +109,185 @@ export const useUIStore = create<UIState>((set, get) => ({
       activities: act.data || [],
       problems: prob.data || [],
       posts: pst.data || [],
-      notes: nts.data || []
+      notes: nts.data || [],
     });
   },
 
   addActivity: async (item) => {
     set((state) => ({ activities: [item, ...state.activities] }));
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) await supabase.from('activities').insert({ ...item, user_id: user.id });
   },
 
   addProblem: async (item) => {
     set((state) => ({ problems: [item, ...state.problems] }));
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) await supabase.from('startup_problems').insert({ ...item, user_id: user.id });
   },
 
   addIdea: async (item) => {
     set((state) => ({ ideas: [item, ...state.ideas] }));
-    // Future implementation: sync ideas table
   },
 
   addPost: async (item) => {
     set((state) => ({ posts: [item, ...state.posts] }));
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) await supabase.from('content_posts').insert({ ...item, user_id: user.id });
   },
 
   updatePostStatus: async (id) => {
     set((state) => ({
-      posts: state.posts.map(p => p.id === id ? { ...p, status: p.status === 'Planned' ? 'Posted' : 'Planned' } : p)
+      posts: state.posts.map((p) =>
+        p.id === id ? { ...p, status: p.status === 'Planned' ? 'Posted' : 'Planned' } : p
+      ),
     }));
-    const newStatus = get().posts.find(p => p.id === id)?.status;
+    const newStatus = get().posts.find((p) => p.id === id)?.status;
     await supabase.from('content_posts').update({ status: newStatus }).eq('id', id);
   },
 
   updatePostPerformance: async (id, performance) => {
     set((state) => ({
-      posts: state.posts.map(p => p.id === id ? { ...p, performance } : p)
+      posts: state.posts.map((p) => (p.id === id ? { ...p, performance } : p)),
     }));
     await supabase.from('content_posts').update({ performance }).eq('id', id);
   },
 
   addNote: async (item) => {
     set((state) => ({ notes: [item, ...state.notes] }));
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) await supabase.from('clinical_notes').insert({ ...item, user_id: user.id });
+  },
+
+  // ── RSS Feed State ─────────────────────────────────────────────────────────
+  sources: loadJSON<FeedSource[]>(LS_SOURCES, DEFAULT_SOURCES),
+  feedItems: loadJSON<FeedItem[]>(LS_FEED, []),
+  categoryFilter: 'All',
+  focusMode: 'All',
+  isFeedLoading: false,
+  lastRefreshed: null,
+
+  addSource: (source) => {
+    const newSource: FeedSource = {
+      ...source,
+      id: `src-${Date.now()}`,
+      addedAt: new Date().toISOString(),
+      active: true,
+    };
+    set((state) => {
+      const updated = [newSource, ...state.sources];
+      saveJSON(LS_SOURCES, updated);
+      return { sources: updated };
+    });
+  },
+
+  removeSource: (id) => {
+    set((state) => {
+      const updated = state.sources.filter((s) => s.id !== id);
+      saveJSON(LS_SOURCES, updated);
+      return { sources: updated };
+    });
+  },
+
+  toggleSourceActive: (id) => {
+    set((state) => {
+      const updated = state.sources.map((s) =>
+        s.id === id ? { ...s, active: !s.active } : s
+      );
+      saveJSON(LS_SOURCES, updated);
+      return { sources: updated };
+    });
+  },
+
+  setCategoryFilter: (cat) => set({ categoryFilter: cat }),
+  setFocusMode: (mode) => set({ focusMode: mode }),
+
+  refreshFeed: async () => {
+    const { sources } = get();
+    set({ isFeedLoading: true });
+    try {
+      // Load saved/pinned/ignored sets
+      const savedIds = new Set<string>(loadJSON<string[]>(LS_SAVED, []));
+      const pinnedIds = new Set<string>(loadJSON<string[]>(LS_PINNED, []));
+      const ignoredIds = new Set<string>(loadJSON<string[]>(LS_IGNORED, []));
+
+      const raw = await aggregateAllSources(sources);
+      const clean = filterNoisy(raw).map((item) => ({
+        ...item,
+        isSaved: savedIds.has(item.id),
+        isPinned: pinnedIds.has(item.id),
+        isIgnored: ignoredIds.has(item.id),
+      }));
+
+      saveJSON(LS_FEED, clean);
+      set({ feedItems: clean, lastRefreshed: new Date().toISOString(), isFeedLoading: false });
+    } catch {
+      set({ isFeedLoading: false });
+    }
+  },
+
+  saveFeedItem: (id) => {
+    set((state) => {
+      const updated = state.feedItems.map((item) =>
+        item.id === id ? { ...item, isSaved: !item.isSaved } : item
+      );
+      saveJSON(LS_FEED, updated);
+      const savedIds = updated.filter((i) => i.isSaved).map((i) => i.id);
+      saveJSON(LS_SAVED, savedIds);
+      return { feedItems: updated };
+    });
+  },
+
+  pinFeedItem: (id) => {
+    set((state) => {
+      const updated = state.feedItems.map((item) =>
+        item.id === id ? { ...item, isPinned: !item.isPinned } : item
+      );
+      saveJSON(LS_FEED, updated);
+      const pinnedIds = updated.filter((i) => i.isPinned).map((i) => i.id);
+      saveJSON(LS_PINNED, pinnedIds);
+      return { feedItems: updated };
+    });
+  },
+
+  ignoreFeedItem: (id) => {
+    set((state) => {
+      const updated = state.feedItems.map((item) =>
+        item.id === id ? { ...item, isIgnored: true } : item
+      );
+      saveJSON(LS_FEED, updated);
+      const ignoredIds = updated.filter((i) => i.isIgnored).map((i) => i.id);
+      saveJSON(LS_IGNORED, ignoredIds);
+      return { feedItems: updated };
+    });
+  },
+
+  visibleFeedItems: () => {
+    const { feedItems, categoryFilter, focusMode } = get();
+    let items = feedItems.filter((i) => !i.isIgnored);
+
+    // Focus mode filter
+    items = applyFocusMode(items, focusMode);
+
+    // Category filter
+    if (categoryFilter !== 'All') {
+      items = items.filter((i) => i.category === categoryFilter);
+    }
+
+    // Pinned first, then opportunities, then newest
+    return items.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      if (a.isOpportunity && !b.isOpportunity) return -1;
+      if (!a.isOpportunity && b.isOpportunity) return 1;
+      return 0;
+    });
   },
 }));

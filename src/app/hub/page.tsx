@@ -1,12 +1,16 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Briefcase, FolderArchive, ArrowDownToLine, ArrowUpFromLine, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from 'react';
+import { useUIStore } from '@/lib/store';
+
 
 export default function Hub() {
-  const { posts, addPost, updatePostStatus } = useUIStore();
+  const { posts, addPost, updatePostStatus, updatePostPerformance } = useUIStore();
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostType, setNewPostType] = useState('Study Snippet');
   const [isAddingPost, setIsAddingPost] = useState(false);
@@ -86,7 +90,7 @@ export default function Hub() {
                    ))}
                  </div>
                  <div className="flex gap-2">
-                   <Button size="sm" onClick={addPost} className="bg-pink-600 hover:bg-pink-700 h-8 text-xs">Save Idea</Button>
+                    <Button size="sm" onClick={handleAddPost} className="bg-pink-600 hover:bg-pink-700 h-8 text-xs">Save Idea</Button>
                    <Button size="sm" variant="ghost" onClick={() => setIsAddingPost(false)} className="h-8 text-xs">Cancel</Button>
                  </div>
                </Card>

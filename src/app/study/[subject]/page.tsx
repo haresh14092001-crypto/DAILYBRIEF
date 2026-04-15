@@ -1,12 +1,15 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { ArrowLeft, FileText, Plus, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import { useUIStore } from '@/lib/store';
 
 import { PdfExtractor } from '@/components/PdfExtractor';
+
 
 export default function SubjectDetail() {
   const params = useParams();
@@ -23,7 +26,7 @@ export default function SubjectDetail() {
   const title = typeof subjectSlug === 'string' ? subjectSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ').replace('And', '&') : '';
 
   // Filter notes for this specific subject
-  const subjectNotes = notes.filter(n => n.subject === title);
+  const subjectNotes = notes.filter((n: any) => n.subject === title);
 
   const handleAddNote = () => {
     if (!newNoteTitle || !newNoteContent) return;
@@ -106,7 +109,7 @@ export default function SubjectDetail() {
                </Card>
              )}
 
-             {subjectNotes.map(note => (
+             {subjectNotes.map((note: any) => (
                <Card key={note.id} className="shadow-sm border-border/40 hover:shadow-md transition-all cursor-pointer">
                  <CardContent className="p-4">
                    <h3 className="font-semibold text-sm mb-1 line-clamp-1">{note.title}</h3>
